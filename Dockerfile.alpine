@@ -1,0 +1,19 @@
+ARG IMAGETAG=8.3.8-fpm-alpine
+FROM php:${IMAGETAG}
+
+ARG TIMEZONE=Etc/UTC
+ARG EXT_LIST="gd intl zip soap pdo pdo_pgsql pdo_mysql mysqli bcmath opcache igbinary memcached redis xdebug"
+
+# Install additional packages
+RUN set -ex \
+    && apk add --update --no-cache \
+    tzdata
+
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \
+    && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > ${PHP_INI_DIR}/conf.d/tzone.ini
+
+COPY tools/ /tmp/tools/
+
+RUN sh /tmp/tools/alpine.sh "${EXT_LIST}" && \
+    rm -rf /tmp/*

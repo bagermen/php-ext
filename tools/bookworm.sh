@@ -216,6 +216,7 @@ memcached_ext()
     fi
 
     if [ $1 = "pkgs-local" ]; then
+        # https://github.com/php-memcached-dev/php-memcached/issues/140
         echo "\
         libssl1.1_1.1.1n-0+deb11u4_amd64.deb \
         libssl-dev_1.1.1n-0+deb10u3_amd64.deb"

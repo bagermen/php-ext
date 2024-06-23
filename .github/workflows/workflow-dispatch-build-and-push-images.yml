@@ -1,0 +1,27 @@
+name: Workflow Dispatch Build And Push Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      php_version:
+        required: true
+        type: string
+
+      environment:
+        description: 'Environment to build images against'
+        type: environment
+        required: true
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Inputs
+        env:
+          PHP_VERSION: ${{ inputs.php_version }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          echo "Ref: ${{ github.ref }}"
+          echo "Version: $PHP_VERSION"
+          echo "Environment: $ENVIRONMENT"
+

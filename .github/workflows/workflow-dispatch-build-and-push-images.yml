@@ -24,4 +24,16 @@ jobs:
           echo "Ref: ${{ github.ref }}"
           echo "Version: $PHP_VERSION"
           echo "Environment: $ENVIRONMENT"
+      - name: Scan Docker Repository
+        id: scan
+        uses: dhet/scan-docker-tags-action@v1.0.1
+        with:
+          repo-url: https://hub.docker.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          image: php
+          max-age-minutes: 15
+          tag-regex: 8\\.3\\.8-fpm-(?:alpine|bulleye|bookworm)$
+      - name: Print
+        run: "echo 'Recent updates: ${{ steps.scan.outputs.tags }}'"
 

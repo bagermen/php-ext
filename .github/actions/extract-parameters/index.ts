@@ -3,14 +3,14 @@ import * as glob from "@actions/glob"
 
 async function Run() {
 	try {
-		const phpVersion = core.getInput("php-version", {required: true});
-		const phpType = core.getInput("php-type", {required: false});
+		const phpVersion = core.getInput("php_version", {required: true});
+		const phpType = core.getInput("php_type", {required: false});
 
 		const dockerFiles = "Dockerfile.*";
 		const globber = await glob.create(dockerFiles, {followSymbolicLinks: false});
 		const files = await globber.glob();
 
-		core.setOutput("image-context", JSON.stringify(createOutput(phpVersion, files, phpType)));
+		core.setOutput("image_context", JSON.stringify(createOutput(phpVersion, files, phpType)));
 	} catch (error: unknown) {
 		if (isError(error)) {
 			core.setFailed(error.message);

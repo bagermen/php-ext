@@ -20,20 +20,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Get Inputs
-        env:
-          PHP_VERSION: ${{ inputs.php_version }}
-          ENVIRONMENT: ${{ inputs.environment }}
-        run: |
-          echo "Ref: ${{ github.ref }}"
-          echo "Version: $PHP_VERSION"
-          echo "Environment: $ENVIRONMENT"
       - name: Scan for PHP configurations
         id: scan
         uses: ./.github/actions/extract-parameters
         with:
           php-version: ${{ env.PHP_VERSION }}
           php-type: 'fpm'
+
+        env:
+          PHP_VERSION: ${{ inputs.php_version }}
+          ENVIRONMENT: ${{ inputs.environment }}
 
       - name: Print
         run: "echo 'Recent updates: ${{ steps.scan.outputs.tags }}'"

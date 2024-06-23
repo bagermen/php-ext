@@ -2,16 +2,17 @@ name: 'Extract Parameters'
 description: 'Extract parameters for image building'
 
 inputs:
-  php_version:  # id of input
+  php_version:
     description: 'PHP version in form: 8.3.1'
     required: true
-  php_type:  # id of input
+  php_type:
     description: 'PHP build type in form: fpm'
     required: false
     default: 'fpm'
 outputs:
-  context: # id of output
+  context:
     description: 'Image context'
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

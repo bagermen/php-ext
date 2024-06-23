@@ -27418,7 +27418,8 @@ function Run() {
         }
     });
 }
-Run();
+// Run();
+core.setOutput("context", JSON.stringify({ image: "hello" }));
 function getImageName(phpVersion, osName, phpType) {
     return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;
 }

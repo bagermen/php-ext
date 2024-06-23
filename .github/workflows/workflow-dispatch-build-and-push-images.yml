@@ -26,7 +26,7 @@ jobs:
           echo "Environment: $ENVIRONMENT"
       - name: Scan for PHP configurations
         id: scan
-        uses: actions/extract-parameters
+        uses: ./actions/extract-parameters
         with:
           php-version: ${{ env.PHP_VERSION }}
           php-type: 'fpm'

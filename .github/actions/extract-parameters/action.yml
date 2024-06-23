@@ -10,8 +10,8 @@ inputs:
     required: false
     default: 'fpm'
 outputs:
-  image_context: # id of output
-    description: ''
+  context: # id of output
+    description: 'Image context'
 runs:
   using: 'node20'
   main: 'dist/index.js'

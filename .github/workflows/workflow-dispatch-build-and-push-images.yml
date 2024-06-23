@@ -13,7 +13,7 @@ on:
         required: true
 
 jobs:
-  image-context:
+  image_context:
     runs-on: ubuntu-latest
     # outputs:
     #   matrix: ${{ steps.scan.outputs.image_contex }}
@@ -22,8 +22,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Scan for PHP configurations
-        id: scan
+
+      - name: Building image context
+        id: build_context
         uses: ./.github/actions/extract-parameters
         with:
           php_version: ${{ env.PHP_VERSION }}
@@ -34,7 +35,7 @@ jobs:
 
       - name: Print context
         env:
-          CONTEXT: ${{ steps.scan.outputs.image_contex }}
+          CONTEXT: ${{ steps.build_context.outputs.contex }}
         run: echo "Matrix value $CONTEXT"
   # build-image:
   #   runs-on: ubuntu-latest

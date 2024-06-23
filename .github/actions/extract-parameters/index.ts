@@ -1,5 +1,7 @@
+import {basename} from "path"
 import * as core from "@actions/core"
 import * as glob from "@actions/glob"
+
 
 async function Run() {
 	try {
@@ -10,7 +12,7 @@ async function Run() {
 		const globber = await glob.create(dockerFiles, {followSymbolicLinks: false});
 		const files = await globber.glob();
 
-		core.setOutput("image_context", JSON.stringify(createOutput(phpVersion, files, phpType)));
+		core.setOutput("context", JSON.stringify(createOutput(phpVersion, files, phpType)));
 	} catch (error: unknown) {
 		if (isError(error)) {
 			core.setFailed(error.message);
@@ -29,7 +31,7 @@ function createOutput(phpVersion:string, files:string[], phpType:string) {
 
 	return osList.map((osName, idx) => ({
 		image: getImageName(phpVersion, osName, phpType),
-		file: files[idx]
+		file: basename(files[idx])
 	}));
 }
 

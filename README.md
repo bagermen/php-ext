@@ -5,3 +5,4 @@ PHP images with extensions
 https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
 https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
 https://docs.github.com/en/actions/using-workflows/reusing-workflows
+https://github.com/dhet/scan-docker-tags-action

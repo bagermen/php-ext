@@ -28,10 +28,12 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           php-type: 'fpm'
-
         env:
           PHP_VERSION: ${{ inputs.php_version }}
           ENVIRONMENT: ${{ inputs.environment }}
+
+      - name: Print context
+        run: echo "Matrix value ${{ steps.scan.outputs.image-contex }}"
   build-image:
     runs-on: ubuntu-latest
     needs: ['image-context']

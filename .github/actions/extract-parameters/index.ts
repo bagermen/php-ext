@@ -20,7 +20,9 @@ async function Run() {
 	}
 }
 
-Run();
+// Run();
+
+core.setOutput("context", JSON.stringify({image:"hello"}));
 
 function getImageName(phpVersion:string, osName:string, phpType:string) {
 	return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;

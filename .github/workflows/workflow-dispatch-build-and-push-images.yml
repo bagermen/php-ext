@@ -15,8 +15,8 @@ on:
 jobs:
   image-context:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.scan.outputs.image_contex }}
+    # outputs:
+    #   matrix: ${{ steps.scan.outputs.image_contex }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -34,15 +34,15 @@ jobs:
 
       - name: Print context
         run: echo "Matrix value ${{ steps.scan.outputs.image_contex }}"
-  build-image:
-    runs-on: ubuntu-latest
-    needs: ['image-context']
-    strategy:
-      matrix:
-        include: ${{ fromJSON(needs.image-context.outputs.matrix) }}
-    steps:
-      - name: Print context
-        run: |
-          echo "image ${{ matrix.image }} / file ${{ matrix.file }}"
+  # build-image:
+  #   runs-on: ubuntu-latest
+  #   needs: ['image-context']
+  #   strategy:
+  #     matrix:
+  #       include: ${{ fromJSON(needs.image-context.outputs.matrix) }}
+  #   steps:
+  #     - name: Print context
+  #       run: |
+  #         echo "image ${{ matrix.image }} / file ${{ matrix.file }}"
 
 

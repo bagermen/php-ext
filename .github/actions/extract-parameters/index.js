@@ -1,5 +1,5 @@
-const core = require("@actions/core");
-const glob = require("@actions/glob");
+import * as core from "@actions/core"
+import * as glob from "@actions/glob"
 
 try {
 	const phpVersion = core.getInput("php-version", {required: true});

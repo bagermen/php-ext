@@ -14,6 +14,13 @@ importers:
       '@actions/glob':
         specifier: ^0.4.0
         version: 0.4.0
+    devDependencies:
+      '@types/standard-error':
+        specifier: ^1.1.2
+        version: 1.1.2
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
 
 packages:
 
@@ -30,6 +37,9 @@ packages:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
 
+  '@types/standard-error@1.1.2':
+    resolution: {integrity: sha512-0luTElsHTI4Xia4tiqT9UseHRXb+cdQCwcjF4sQhrB4Bqx13JFbJ4FeH9sLdVSK5py2NGka92eiKTF9/11zbbQ==}
+
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
@@ -45,6 +55,11 @@ packages:
   tunnel@0.0.6:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
+
+  typescript@5.5.2:
+    resolution: {integrity: sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==}
+    engines: {node: '>=14.17'}
+    hasBin: true
 
   undici@5.28.4:
     resolution: {integrity: sha512-72RFADWFqKmUb2hmmvNODKL3p9hcB6Gt2DOQMis1SEBaV6a4MH8soBvzg+95CYhCKPFedut2JY9bMfrDl9D23g==}
@@ -73,6 +88,8 @@ snapshots:
 
   '@fastify/busboy@2.1.1': {}
 
+  '@types/standard-error@1.1.2': {}
+
   balanced-match@1.0.2: {}
 
   brace-expansion@1.1.11:
@@ -87,6 +104,8 @@ snapshots:
       brace-expansion: 1.1.11
 
   tunnel@0.0.6: {}
+
+  typescript@5.5.2: {}
 
   undici@5.28.4:
     dependencies:

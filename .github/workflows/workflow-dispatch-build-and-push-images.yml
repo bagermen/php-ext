@@ -33,7 +33,9 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
 
       - name: Print context
-        run: echo "Matrix value ${{ steps.scan.outputs.image_contex }}"
+        env:
+          CONTEXT: ${{ steps.scan.outputs.image_contex }}
+        run: echo "Matrix value $CONTEXT"
   # build-image:
   #   runs-on: ubuntu-latest
   #   needs: ['image-context']

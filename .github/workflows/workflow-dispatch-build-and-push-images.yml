@@ -32,5 +32,5 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
 
       - name: Print
-        run: "echo 'Recent updates: ${{ steps.scan.outputs.tags }}'"
+        run: "echo 'Recent updates: ${{ steps.scan.outputs.image-context }}'"
 

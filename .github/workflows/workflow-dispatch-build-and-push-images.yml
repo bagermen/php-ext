@@ -13,13 +13,19 @@ on:
         required: true
 
 jobs:
-  job1:
+  checkout:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+  image-context:
+    runs-on: ubuntu-latest
+    needs: ['checkout']
+    outputs:
+      matrix: ${{ steps.scan.outputs.image-contex }}
+    steps:
       - name: Scan for PHP configurations
         id: scan
         uses: ./.github/actions/extract-parameters
@@ -30,7 +36,15 @@ jobs:
         env:
           PHP_VERSION: ${{ inputs.php_version }}
           ENVIRONMENT: ${{ inputs.environment }}
+  build-image:
+    runs-on: ubuntu-latest
+    needs: ['checkout', 'image-context']
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.image-context.outputs.matrix) }}
+    steps:
+      - name: Print context
+        run: |
+          echo "image ${{ matrix.image }} / file ${{ matrix.file }}"
 
-      - name: Print
-        run: "echo 'Recent updates: ${{ steps.scan.outputs.image-context }}'"
 

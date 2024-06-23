@@ -29,7 +29,7 @@ function createOutput(phpVersion:string, files:string[], phpType:string) {
 
 	return osList.map((osName, idx) => ({
 		image: getImageName(phpVersion, osName, phpType),
-		dockerFile: files[idx]
+		file: files[idx]
 	}));
 }
 

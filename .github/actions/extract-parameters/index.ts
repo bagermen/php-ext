@@ -22,7 +22,7 @@ async function Run() {
 
 // Run();
 
-core.setOutput("context", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+core.setOutput("context", "\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"");
 
 function getImageName(phpVersion:string, osName:string, phpType:string) {
 	return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;

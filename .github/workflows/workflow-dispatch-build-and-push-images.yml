@@ -20,8 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Building image context
-        id: createcontext
+      - name: Extract Image Context
+        id: extract_context
         uses: ./.github/actions/extract-parameters
         with:
           php_version: ${{ env.PHP_VERSION }}
@@ -31,7 +31,7 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
       - name: Print
         env:
-          CONTEXT: "${{ steps.createcontext.outputs.contex }}"
+          CONTEXT: "${{ steps.extract_context.outputs.context }}"
         run: echo "Matrix value $CONTEXT"
 
 

@@ -1,5 +1,10 @@
 name: 'Extract Parameters'
 description: 'Extract parameters for image building'
+
+branding:
+  icon: 'heart'
+  color: 'red'
+
 inputs:
   php_version:
     description: 'PHP version in form: 8.3.1'
@@ -8,6 +13,7 @@ inputs:
     description: 'PHP build type in form: fpm'
     required: false
     default: 'fpm'
+
 outputs:
   context:
     description: 'Image context'

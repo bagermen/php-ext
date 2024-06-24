@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 2751:
@@ -27388,35 +27388,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const path_1 = __nccwpck_require__(1017);
 const core = __importStar(__nccwpck_require__(9528));
 const glob = __importStar(__nccwpck_require__(417));
-function Run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const phpVersion = core.getInput("php_version", { required: true });
-            const phpType = core.getInput("php_type", { required: false });
-            const dockerFiles = "Dockerfile.*";
-            const globber = yield glob.create(dockerFiles, { followSymbolicLinks: false });
-            const files = yield globber.glob();
-            core.setOutput("context", JSON.stringify(createOutput(phpVersion, files, phpType)));
+async function Run() {
+    try {
+        const phpVersion = core.getInput("php_version", { required: true });
+        const phpType = core.getInput("php_type", { required: false });
+        const dockerFiles = "Dockerfile.*";
+        const globber = await glob.create(dockerFiles, { followSymbolicLinks: false });
+        const files = await globber.glob();
+        core.setOutput("context", JSON.stringify(createOutput(phpVersion, files, phpType)));
+    }
+    catch (error) {
+        if (isError(error)) {
+            core.setFailed(error.message);
         }
-        catch (error) {
-            if (isError(error)) {
-                core.setFailed(error.message);
-            }
-        }
-    });
+    }
 }
 // Run();
 core.setOutput("context", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -29336,3 +29325,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map

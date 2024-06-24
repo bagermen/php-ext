@@ -27408,7 +27408,7 @@ async function Run() {
     }
 }
 // Run();
-core.setOutput("context", "\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"");
+core.setOutput("context", '\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"');
 function getImageName(phpVersion, osName, phpType) {
     return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;
 }

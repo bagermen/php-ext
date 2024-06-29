@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
       - name: Extract Image Context
         id: extract_context
-        uses: ./.github/actions/extract-parameters
+        uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
           php_type: 'fpm'

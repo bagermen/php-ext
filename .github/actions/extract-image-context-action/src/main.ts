@@ -2,8 +2,7 @@ import {basename} from "path"
 import * as core from "@actions/core"
 import * as glob from "@actions/glob"
 
-
-async function Run() {
+export async function run() {
 	try {
 		const phpVersion = core.getInput("php_version", {required: true});
 		const phpType = core.getInput("php_type", {required: false});
@@ -19,10 +18,6 @@ async function Run() {
 		}
 	}
 }
-
-// Run();
-
-core.setOutput("context", '\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"');
 
 function getImageName(phpVersion:string, osName:string, phpType:string) {
 	return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;

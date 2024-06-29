@@ -1,9 +1,5 @@
-name: 'Extract Parameters'
-description: 'Extract parameters for image building'
-
-branding:
-  icon: 'heart'
-  color: 'red'
+name: 'Extract Image Context'
+description: 'Extract image context for PHP images building'
 
 inputs:
   php_version:

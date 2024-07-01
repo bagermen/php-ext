@@ -1,15 +1,18 @@
 import {basename} from "path"
 import * as core from "@actions/core"
 import * as glob from "@actions/glob"
+import {
+	findDockerFileNames,
+	getOfficialPHPTag,
+	isError
+} from "./utils"
 
 export async function run() {
 	try {
 		const phpVersion = core.getInput("php_version", {required: true});
 		const phpType = core.getInput("php_type", {required: false});
 
-		const dockerFiles = "Dockerfile.*";
-		const globber = await glob.create(dockerFiles, {followSymbolicLinks: false});
-		const files = await globber.glob();
+		const files = await findDockerFileNames();
 
 		core.setOutput("context", JSON.stringify(createOutput(phpVersion, files, phpType)));
 	} catch (error: unknown) {
@@ -32,10 +35,4 @@ function createOutput(phpVersion:string, files:string[], phpType:string) {
 	}));
 }
 
-function isError(error: unknown): error is Error {
-	if (error && typeof error === "object" && "message" in error) {
-		return true;
-	}
 
-	return false;
-}

@@ -20,10 +20,10 @@ export default async (): Promise<JestConfigWithTsJest> => {
       		"/node_modules/",
       		"/dist/"
     	],
-		globals: {
-			"ts-jest": {
+		transform: {
+			"^.+\\.tsx?$": ["ts-jest", {
 				tsconfig: "./__tests__/tsconfig.json"
-			}
+			}]
 		},
 		moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' })
 	};

@@ -13,11 +13,11 @@ on:
         required: true
 env:
   PHP_VERSION: ${{ inputs.php_version }}
-  ENVIRONMENT: ${{ inputs.environment }}
 
 jobs:
   image_context:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     outputs:
       matrix: ${{ steps.extract_context.outputs.context }}
     steps:
@@ -29,12 +29,9 @@ jobs:
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
-          environment: ${{ env.ENVIRONMENT }}
+          php_ext_namespace: besogon1
           php_type: 'fpm'
-      - name: Print
-        env:
-          CONTEXT: "${{ steps.extract_context.outputs.context }}"
-        run: echo "Matrix value $CONTEXT"
+
   build_image:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -48,6 +45,6 @@ jobs:
 
       - name: Print context
         run: |
-          echo "image ${{ matrix.image }} / file ${{ matrix.file }}"
+          echo "phpTag ${{ matrix.phpTag }} / phpExtTag ${{ matrix.phpExtTag }} / dockerFile ${{ matrix.dockerFile }}"
 
 

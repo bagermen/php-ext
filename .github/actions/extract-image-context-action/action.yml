@@ -9,11 +9,9 @@ inputs:
     description: 'PHP build type in form: fpm'
     required: false
     default: 'fpm'
-  check_phpext_tag_existence:
-    description: 'Check phpext tags at DockerHub'
-    type: boolean
-    default: false
-    required: true
+  php_ext_namespace:
+    description: 'DockerHub namespace of PHPExt images'
+    required: false
 
 outputs:
   context:

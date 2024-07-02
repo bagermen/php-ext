@@ -6,6 +6,7 @@ import {
 	OFFICIALIMAGES_NAMESPACE
 } from "docker-hub-tags";
 import {
+	getOsNameFromDockerFile,
 	getOfficialPHPTag,
 	getPHPTag,
 	isError
@@ -21,8 +22,8 @@ export async function run() {
 		const fileNames = await findDockerFileNames();
 		const context: ImageContext[] = fileNames.map(fileName => ({
 			dockerFile: fileName,
-			phpTag: getOfficialPHPTag(phpVersion, fileName, phpType),
-			phpExtTag: getPHPTag(phpVersion, fileName, phpType)
+			phpTag: getOfficialPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType),
+			phpExtTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType)
 		}));
 
 		core.setOutput("context", JSON.stringify(await filterContext(context, phpExtNamespace)));
@@ -63,7 +64,7 @@ export async function filterContext(contextes:ImageContext[], phpExtNamespace?: 
 			phpExtTags = result.value.getAllTags().filter(tag => phpExtTags.includes(tag.name)).map(tag => tag.name);
 		}
 	}
-	console.log(JSON.stringify(contextes));
+
 	return contextes.filter(({phpTag, phpExtTag}) => {
 		return phpTags.includes(phpTag) && (checkPhpextTag ? !phpExtTags.includes(phpExtTag) : true)
 	});

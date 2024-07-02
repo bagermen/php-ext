@@ -14,6 +14,9 @@ importers:
       '@actions/glob':
         specifier: ^0.4.0
         version: 0.4.0
+      docker-hub-tags:
+        specifier: ^1.0.1
+        version: 1.0.1
     devDependencies:
       '@types/jest':
         specifier: ^29.5.12
@@ -586,6 +589,10 @@ packages:
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
+
+  docker-hub-tags@1.0.1:
+    resolution: {integrity: sha512-kBSfUqILokCEIj97DlpL1q/Twer0ULQ7WzleNWpI2csAoCdsR8dmPffUaj8o8gI3QxhBp0TOQrynwiRIiKhvlQ==}
+    engines: {node: '>=20', npm: '>=10'}
 
   electron-to-chromium@1.4.815:
     resolution: {integrity: sha512-OvpTT2ItpOXJL7IGcYakRjHCt8L5GrrN/wHCQsRB4PQa1X9fe+X9oen245mIId7s14xvArCGSTIq644yPUKKLg==}
@@ -1328,6 +1335,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
 snapshots:
 
   '@actions/core@1.10.1':
@@ -2031,6 +2041,10 @@ snapshots:
   diff-sequences@29.6.3: {}
 
   diff@4.0.2: {}
+
+  docker-hub-tags@1.0.1:
+    dependencies:
+      zod: 3.23.8
 
   electron-to-chromium@1.4.815: {}
 
@@ -2873,3 +2887,5 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.23.8: {}

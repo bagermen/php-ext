@@ -11,6 +11,9 @@ on:
         description: 'Environment to build images against'
         type: environment
         required: true
+env:
+  PHP_VERSION: ${{ inputs.php_version }}
+  ENVIRONMENT: ${{ inputs.environment }}
 
 jobs:
   image_context:
@@ -20,23 +23,21 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
       - name: Extract Image Context
         id: extract_context
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
+          environment: ${{ env.ENVIRONMENT }}
           php_type: 'fpm'
-        env:
-          PHP_VERSION: ${{ inputs.php_version }}
-          ENVIRONMENT: ${{ inputs.environment }}
       - name: Print
         env:
           CONTEXT: "${{ steps.extract_context.outputs.context }}"
         run: echo "Matrix value $CONTEXT"
   build_image:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     needs: ['image_context']
     strategy:
       matrix:
@@ -44,8 +45,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
       - name: Print context
         run: |
           echo "image ${{ matrix.image }} / file ${{ matrix.file }}"

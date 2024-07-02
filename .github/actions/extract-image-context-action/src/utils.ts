@@ -1,14 +1,3 @@
-import {basename} from "path";
-import * as glob from "@actions/glob"
-
-export async function findDockerFileNames() {
-	const dockerFiles = "Dockerfile.*";
-		const globber = await glob.create(dockerFiles, {followSymbolicLinks: false});
-		const files = await globber.glob();
-
-	return files.map<string>(file => basename(file));
-}
-
 export function getOsNameFromDockerFile(file: string) {
 	return file.replace(/.*Dockerfile\./, "");
 }

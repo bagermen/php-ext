@@ -1,6 +1,7 @@
 import {filterContext} from "@src/main";
 import {getOsNameFromDockerFile, getOfficialPHPTag, getPHPTag} from "@src/utils"
 import {DockerHubTags} from "docker-hub-tags";
+import * as core from '@actions/core'
 
 describe("Test utils", () => {
 	test("getOsNameFromDockerFile: remove docker prefix", () => {
@@ -9,22 +10,22 @@ describe("Test utils", () => {
 	});
 
 	test("getOfficialPHPTag: check name", () => {
-		const file = "aaa/ddd/Dockerfile.alpine";
 		expect(getOfficialPHPTag("8.3.8", "alpine", "fpm")).toBe("8.3.8-fpm-alpine");
 	});
 
 	test("getPHPTag: check name", () => {
-		const file = "aaa/ddd/Dockerfile.alpine";
 		expect(getPHPTag("8.3.8", "alpine", "fpm")).toBe("8.3.8-fpm-alpine-ext");
 	});
 });
 
 let dhtInitMock: jest.SpiedFunction<typeof DockerHubTags.init>;
 let getAllTags: jest.SpiedFunction<typeof DockerHubTags.prototype.getAllTags>;
+let debugMock: jest.SpiedFunction<typeof core.debug>
 
 describe("DockerHub Queries", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		debugMock = jest.spyOn(core, 'debug').mockImplementation();
 	});
 
 	test("PHPTag Only: tag exists in official PHP repo", async () => {

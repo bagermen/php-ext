@@ -45,6 +45,7 @@ export async function findDockerFileNames() {
 export async function filterContext(contextes:ImageContext[], phpExtNamespace?: string) {
 	let phpTags = contextes.map(c => c.phpTag);
 	let phpExtTags = contextes.map(c=> c.phpExtTag);
+
 	const checkPhpextTag = !!phpExtNamespace;
 	const tagsList = [
 		DockerHubTags.init(OFFICIALIMAGES_NAMESPACE, "php"),
@@ -64,8 +65,7 @@ export async function filterContext(contextes:ImageContext[], phpExtNamespace?: 
 			phpExtTags = result.value.getAllTags().filter(tag => phpExtTags.includes(tag.name)).map(tag => tag.name);
 		}
 	}
-console.log(JSON.stringify(phpTags));
-console.log(JSON.stringify(phpExtTags));
+
 	return contextes.filter(({phpTag, phpExtTag}) => {
 		return phpTags.includes(phpTag) && (checkPhpextTag ? !phpExtTags.includes(phpExtTag) : true)
 	});

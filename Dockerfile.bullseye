@@ -1,4 +1,4 @@
-ARG IMAGETAG=8.3.8-fpm-bulleye
+ARG IMAGETAG=8.3.8-fpm-bullseye
 FROM php:${IMAGETAG}
 
 ARG TIMEZONE=Etc/UTC
@@ -10,5 +10,5 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 
 COPY tools/ /tmp/tools/
 
-RUN sh /tmp/tools/bulleye.sh "${EXT_LIST}" && \
+RUN sh /tmp/tools/bullseye.sh "${EXT_LIST}" && \
     rm -rf /tmp/*

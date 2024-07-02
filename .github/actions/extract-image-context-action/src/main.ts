@@ -64,7 +64,7 @@ export async function filterContext(contextes:ImageContext[], phpExtNamespace?: 
 			phpExtTags = result.value.getAllTags().filter(tag => phpExtTags.includes(tag.name)).map(tag => tag.name);
 		}
 	}
-
+console.log(JSON.stringify(contextes));
 	return contextes.filter(({phpTag, phpExtTag}) => {
 		return phpTags.includes(phpTag) && (checkPhpextTag ? !phpExtTags.includes(phpExtTag) : true)
 	});

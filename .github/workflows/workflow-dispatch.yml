@@ -1,0 +1,25 @@
+name: Workflow Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      php_version:
+        description: 'PHP version'
+        required: true
+        type: string
+
+      environment:
+        description: 'Environment'
+        type: environment
+        required: true
+env:
+  PHP_VERSION: ${{ inputs.php_version }}
+
+jobs:
+  build_images:
+    uses: ./.github/workflows/build-and-push-images.yml
+    with:
+      php_version: ${{ inputs.php_version }}
+      environment: ${{ inputs.environment }}
+
+

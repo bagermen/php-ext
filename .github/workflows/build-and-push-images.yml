@@ -1,18 +1,19 @@
-name: Workflow Dispatch Build And Push Images
+name: Build And Push Images
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       php_version:
         required: true
         type: string
-
       environment:
         description: 'Environment to build images against'
-        type: environment
+        type: string
         required: true
+
 env:
   PHP_VERSION: ${{ inputs.php_version }}
+  PHP_EXT_NAMESPACE: "${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}"
 
 jobs:
   image_context:
@@ -29,8 +30,8 @@ jobs:
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
-          php_ext_namespace: besogon1
-          php_type: 'fpm'
+          php_ext_namespace: ${{ env.PHP_EXT_NAMESPACE }}
+          php_type: ${{ vars.PHP_TYPE }}
 
   build_image:
     runs-on: ubuntu-latest
@@ -47,5 +48,3 @@ jobs:
       - name: Print context
         run: |
           echo "phpTag ${{ matrix.phpTag }} / phpExtTag ${{ matrix.phpExtTag }} / dockerFile ${{ matrix.dockerFile }}"
-
-

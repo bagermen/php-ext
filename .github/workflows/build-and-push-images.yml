@@ -135,11 +135,3 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           github-token: ${{ github.token }}
           push-to-registry: true
-
-      - name: Generate artifact attestation (DockerHub)
-        if: ${{ vars.PUSH_TO_DOCKERHUB == 'true'  }}
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ env.IMAGE_NAME_DOCKER}}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: false

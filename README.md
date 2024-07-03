@@ -11,9 +11,5 @@ https://github.com/dhet/scan-docker-tags-action
 https://www.npmjs.com/package/docker-hub-tags
 
 
-repo-url: https://hub.docker.com
-username: ${{ secrets.DOCKER_USERNAME }}
-password: ${{ secrets.DOCKER_PASSWORD }}
-image: library/php
-max-age-minutes: 15
-tag-regex: 8\\.3\\.8-fpm-(?:alpine|bulleye|bookworm)$
+verify:
+	gh at verify oci://ghcr.io/bagermen/php:8.3.8-fpm-alpine-ext --owner bagermen

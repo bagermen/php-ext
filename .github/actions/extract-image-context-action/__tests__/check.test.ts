@@ -14,7 +14,7 @@ describe("Test utils", () => {
 	});
 
 	test("getPHPTag: check name", () => {
-		expect(getPHPTag("8.3.8", "alpine", "fpm")).toBe("8.3.8-fpm-alpine-ext");
+		expect(getPHPTag("8.3.8", "alpine", "ext", "fpm")).toBe("8.3.8-fpm-alpine-ext");
 	});
 });
 

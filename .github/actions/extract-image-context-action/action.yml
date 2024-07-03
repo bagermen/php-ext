@@ -9,6 +9,10 @@ inputs:
     description: 'PHP build type in form: fpm'
     required: false
     default: 'fpm'
+  php_ext_suffix:
+    description: 'PHP tag suffix'
+    required: false
+    default: 'ext'
   php_ext_namespace:
     description: 'DockerHub namespace of PHPExt images'
     required: false

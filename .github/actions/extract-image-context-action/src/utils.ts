@@ -6,9 +6,9 @@ export function getOfficialPHPTag(phpVersion:string, osName:string, phpType?:str
 	return `${phpVersion}${phpType ? `-${phpType}-` : ''}${osName}`;
 }
 
-export function getPHPTag(phpVersion:string, osName:string, phpType?:string) {
+export function getPHPTag(phpVersion:string, osName:string, suffix: string, phpType?:string) {
 	const officialTag = getOfficialPHPTag(phpVersion, osName, phpType);
-	return `${officialTag}-ext`;
+	return `${officialTag}-${suffix}`;
 }
 
 export function isError(error: unknown): error is Error {

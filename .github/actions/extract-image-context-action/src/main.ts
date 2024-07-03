@@ -18,12 +18,13 @@ export async function run() {
 		const phpVersion = core.getInput("php_version", {required: true});
 		const phpExtNamespace = core.getInput("php_ext_namespace", {required: false});
 		const phpType = core.getInput("php_type", {required: false});
+		const suffix = core.getInput("php_ext_suffix", {required: false});
 
 		const fileNames = await findDockerFileNames();
 		const context: ImageContext[] = fileNames.map(fileName => ({
 			dockerFile: fileName,
 			phpTag: getOfficialPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType),
-			phpExtTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType)
+			phpExtTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), suffix, phpType)
 		}));
 
 		core.setOutput("context", JSON.stringify(await filterContext(context, phpExtNamespace)));

@@ -32,6 +32,7 @@ jobs:
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
+          php_ext_suffix: ext
           php_ext_namespace: ${{ env.DOCKERHUB_NAMESPACE }}
           php_type: ${{ vars.PHP_TYPE }}
 
@@ -54,8 +55,8 @@ jobs:
     env:
       DOCKER_REGISTRY: docker.io
       REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.actor }}/php
-      DOCKERHUB_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
+      IMAGE_NAME: ghcr.io/${{ github.actor }}/php
+      IMAGE_NAME_DOCKER: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('docker.io/{0}/php', vars.DOCKERHUB_NAMESPACE) || '' }}
       EXT_LIST: ${{ vars.EXT_LIST }}
 
     steps:
@@ -84,8 +85,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', env.DOCKERHUB_NAMESPACE) || '' }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ env.IMAGE_NAME_DOCKER }}
+            ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
@@ -107,7 +108,7 @@ jobs:
       - name: Test Docker Image
         run: |
           echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
-          LIBS=$(docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
+          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
           for lib in $EXT_LIST; do \
             if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
               then echo "::debug::OK: $lib"; \
@@ -116,8 +117,23 @@ jobs:
           done
           echo "::endgroup::"
 
-      - name: Print context
-        run: |
-          echo "phpTag ${{ matrix.phpTag }} / phpExtTag ${{ matrix.phpExtTag }} / dockerFile ${{ matrix.dockerFile }}"
-          echo "PUSH_TO_DOCKERHUB: ${{ vars.PUSH_TO_DOCKERHUB }}; DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE }}; PHP_TYPE: ${{ vars.PHP_TYPE }}"
-          echo "PUSH_TO_DOCKERHUB: ${{ env.DOCKERHUB_NAMESPACE }}"
+      - name: Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Generate artifact attestation
+        if: ${{ vars.PUSH_TO_DOCKERHUB == 'true'  }}
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.IMAGE_NAME_DOCKER}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: false

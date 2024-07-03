@@ -24,10 +24,10 @@ jobs:
       DOCKERHUB_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
 
     steps:
-      - name: Check out the repo
+      - name: Checkout the repo
         uses: actions/checkout@v4
 
-      - name: Extract Image Context
+      - name: Extract image context
         id: extract_context
         uses: ./.github/actions/extract-image-context-action
         with:
@@ -37,7 +37,7 @@ jobs:
           php_type: ${{ vars.PHP_TYPE }}
 
   build_image:
-    name: Build and Push Docker Image
+    name: Build And Push Image
     needs: ['image_context']
     if: ${{ fromJSON(needs.image_context.outputs.matrix)[0] != null  }}
     runs-on: ubuntu-latest
@@ -53,8 +53,6 @@ jobs:
       attestations: write
 
     env:
-      DOCKER_REGISTRY: docker.io
-      REGISTRY: ghcr.io
       IMAGE_NAME: ghcr.io/${{ github.actor }}/php
       IMAGE_NAME_DOCKER: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('docker.io/{0}/php', vars.DOCKERHUB_NAMESPACE) || '' }}
       EXT_LIST: ${{ vars.EXT_LIST }}
@@ -90,7 +88,32 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
-      - name: Build Docker Image
+      - name: Build image for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerFile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            IMAGETAG=${{ matrix.phpTag }}
+            EXT_LIST=${{ vars.EXT_LIST }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image
+        run: |
+          echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
+          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
+          for lib in $EXT_LIST; do \
+            if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
+              then echo "::debug::OK: $lib"; \
+              else echo "::error title={$lib}::{$lib library may not have been installed}"; \
+            fi; \
+          done
+          echo "::endgroup::"
+
+      - name: Build and push the image
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -105,32 +128,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test Docker Image
-        run: |
-          echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
-          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
-          for lib in $EXT_LIST; do \
-            if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
-              then echo "::debug::OK: $lib"; \
-              else echo "::error title={$lib}::{$lib library may not have been installed}"; \
-            fi; \
-          done
-          echo "::endgroup::"
-
-      - name: Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-      - name: Generate artifact attestation
+      - name: Generate artifact attestation (GitHub)
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: ${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
-      - name: Generate artifact attestation
+      - name: Generate artifact attestation (DockerHub)
         if: ${{ vars.PUSH_TO_DOCKERHUB == 'true'  }}
         uses: actions/attest-build-provenance@v1
         with:

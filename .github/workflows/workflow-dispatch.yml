@@ -12,19 +12,26 @@ on:
         description: 'Environment'
         type: environment
         required: true
-env:
-  PHP_VERSION: ${{ inputs.php_version }}
 
 jobs:
-  build_images:
-    uses: ./.github/workflows/build-and-push-images.yml
-    secrets: inherit
-    with:
-      php_version: ${{ inputs.php_version }}
-      environment: ${{ inputs.environment }}
+  test:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      PHP_EXT_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
+    steps:
+      - name: THE TEST
+        run: |
+          echo "TEST: $PHP_EXT_NAMESPACE"
+  # build_images:
+  #   uses: ./.github/workflows/build-and-push-images.yml
+  #   secrets: inherit
+  #   with:
+  #     php_version: ${{ inputs.PHP_VERSION }}
+  #     environment: ${{ inputs.environment }}
 
-    permissions:
-      packages: write
-      contents: read
-      id-token: write
-      attestations: write
+  #   permissions:
+  #     packages: write
+  #     contents: read
+  #     id-token: write
+  #     attestations: write

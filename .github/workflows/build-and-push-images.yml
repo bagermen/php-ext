@@ -81,18 +81,19 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
-      - name: Build Docker Image
-        id: push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ${{ matrix.dockerFile }}
-          load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          annotations: ${{ steps.meta.outputs.annotations }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # - name: Build Docker Image
+      #   id: push
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     file: ${{ matrix.dockerFile }}
+      #     load: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     annotations: ${{ steps.meta.outputs.annotations }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
 
       - name: Print context
         run: |
           echo "phpTag ${{ matrix.phpTag }} / phpExtTag ${{ matrix.phpExtTag }} / dockerFile ${{ matrix.dockerFile }}"
+          echo "PUSH_TO_DOCKERHUB: ${{ vars.PUSH_TO_DOCKERHUB }}; DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE }}; PHP_TYPE: ${{ vars.PHP_TYPE }}"

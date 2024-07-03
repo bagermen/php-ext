@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: THE TEST
         run: |
-          echo "PUSH_TO_DOCKERHUB: ${{ vars.PUSH_TO_DOCKERHUB }}; DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE }}; PHP_TYPE: ${{ vars.PHP_TYPE }}"
+          echo "PHP_EXT_NAMESPACE: ${{ env.PHP_EXT_NAMESPACE }};"
   # build_images:
   #   uses: ./.github/workflows/build-and-push-images.yml
   #   secrets: inherit

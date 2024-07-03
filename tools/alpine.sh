@@ -291,7 +291,7 @@ install_dev_packages() {
 }
 
 install_local_packages() {
-	local list= "$(echo "$@" | sed -e "s,[[:space:]\n]\+, ,g" -e "s,^[[:space:]]\+\|[[:space:]]\+$,,g")"
+	local list="$(echo "$@" | sed -e "s,[[:space:]\n]\+, ,g" -e "s,^[[:space:]]\+\|[[:space:]]\+$,,g")"
 
 	if [ -z "$list" ]; then
 		echo "No local packages for installation"

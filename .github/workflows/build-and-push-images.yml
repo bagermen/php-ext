@@ -111,7 +111,7 @@ jobs:
           for lib in $EXT_LIST; do \
             if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
               then echo "::debug::OK: $lib"; \
-              else echo "::error title={$lib}::{$lib library may not have been installed}; \
+              else echo "::error title={$lib}::{$lib library may not have been installed}"; \
             fi; \
           done
           echo "::endgroup::"

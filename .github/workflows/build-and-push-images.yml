@@ -100,7 +100,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             IMAGETAG=${{ matrix.phpTag }}
-            EXT_LIST="${{ vars.EXT_LIST }}"
+            EXT_LIST=${{ vars.EXT_LIST }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

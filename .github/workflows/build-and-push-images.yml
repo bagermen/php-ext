@@ -90,50 +90,50 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
-      # - name: Build Docker Image
-      #   id: build
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     file: ${{ matrix.dockerFile }}
-      #     load: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     annotations: ${{ steps.meta.outputs.annotations }}
-      #     build-args: |
-      #       IMAGETAG=${{ matrix.phpTag }}
-      #       EXT_LIST=${{ vars.EXT_LIST }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - name: Build Docker Image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerFile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: |
+            IMAGETAG=${{ matrix.phpTag }}
+            EXT_LIST=${{ vars.EXT_LIST }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      # - name: Test Docker Image
-      #   run: |
-      #     echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
-      #     LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
-      #     for lib in $EXT_LIST; do \
-      #       if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
-      #         then echo "::debug::OK: $lib"; \
-      #         else echo "::error title={$lib}::{$lib library may not have been installed}"; \
-      #       fi; \
-      #     done
-      #     echo "::endgroup::"
+      - name: Test Docker Image
+        run: |
+          echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
+          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
+          for lib in $EXT_LIST; do \
+            if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
+              then echo "::debug::OK: $lib"; \
+              else echo "::error title={$lib}::{$lib library may not have been installed}"; \
+            fi; \
+          done
+          echo "::endgroup::"
 
-      # - name: Push Docker Image
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
+      - name: Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
 
-      # - name: Generate artifact attestation
-      #   uses: actions/attest-build-provenance@v1
-      #   with:
-      #     subject-name: ${{ env.IMAGE_NAME}}
-      #     subject-digest: ${{ steps.build.outputs.digest }}
-      #     push-to-registry: true
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
 
-      # - name: Generate artifact attestation
-      #   if: ${{ vars.PUSH_TO_DOCKERHUB == 'true'  }}
-      #   uses: actions/attest-build-provenance@v1
-      #   with:
-      #     subject-name: ${{ env.IMAGE_NAME_DOCKER}}
-      #     subject-digest: ${{ steps.build.outputs.digest }}
-      #     push-to-registry: false
+      - name: Generate artifact attestation
+        if: ${{ vars.PUSH_TO_DOCKERHUB == 'true'  }}
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.IMAGE_NAME_DOCKER}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: false

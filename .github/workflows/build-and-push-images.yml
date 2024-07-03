@@ -107,7 +107,7 @@ jobs:
       - name: Test Docker Image
         run: |
           echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
-          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
+          LIBS=$(docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
           for lib in $EXT_LIST; do \
             if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
               then echo "::debug::OK: $lib"; \

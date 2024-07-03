@@ -35,7 +35,6 @@ jobs:
           php_ext_namespace: ${{ env.DOCKERHUB_NAMESPACE }}
           php_type: ${{ vars.PHP_TYPE }}
 
-
   build_image:
     name: Build and Push Docker Image
     needs: ['image_context']
@@ -53,7 +52,11 @@ jobs:
       attestations: write
 
     env:
+      DOCKER_REGISTRY: docker.io
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.actor }}/php
       DOCKERHUB_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
+      EXT_LIST: ${{ vars.EXT_LIST }}
 
     steps:
       - name: Check out the repo
@@ -82,7 +85,7 @@ jobs:
         with:
           images: |
             ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', env.DOCKERHUB_NAMESPACE) || '' }}
-            ghcr.io/${{ github.actor }}/php
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
@@ -95,21 +98,21 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
-          build-args: IMAGETAG=${{ matrix.phpTag }}
+          build-args: IMAGETAG=${{ matrix.phpTag }},EXT_LIST=${{ env.EXT_LIST }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # - name: Test Docker Image
-      #   id: test
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     file: ${{ matrix.dockerFile }}
-      #     load: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     annotations: ${{ steps.meta.outputs.annotations }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - name: Test Docker Image
+        run: |
+          echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
+          LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
+          for lib in $EXT_LIST; do \
+            if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
+              then echo "::debug::OK: $lib"; \
+              else echo "::error title={$lib}::{$lib library may not have been installed}; \
+            fi; \
+          done
+          echo "::endgroup::"
 
       - name: Print context
         run: |

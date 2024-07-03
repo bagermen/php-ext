@@ -11,6 +11,12 @@ on:
         type: string
         required: true
 
+permissions:
+  packages: write
+  contents: read
+  id-token: write
+  attestations: write
+
 jobs:
   image_context:
     name: Generate Image Context
@@ -45,12 +51,6 @@ jobs:
     strategy:
       matrix:
         include: ${{ fromJSON(needs.image_context.outputs.matrix) }}
-
-    permissions:
-      packages: write
-      contents: read
-      id-token: write
-      attestations: write
 
     env:
       IMAGE_NAME: ghcr.io/${{ github.actor }}/php
@@ -133,6 +133,7 @@ jobs:
         with:
           subject-name: ${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build.outputs.digest }}
+          github-token: ${{ github.token }}
           push-to-registry: true
 
       - name: Generate artifact attestation (DockerHub)

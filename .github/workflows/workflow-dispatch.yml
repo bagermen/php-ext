@@ -13,6 +13,12 @@ on:
         type: environment
         required: true
 
+permissions:
+  packages: write
+  contents: read
+  id-token: write
+  attestations: write
+
 jobs:
   build_images:
     uses: ./.github/workflows/build-and-push-images.yml
@@ -21,8 +27,4 @@ jobs:
       php_version: ${{ inputs.PHP_VERSION }}
       environment: ${{ inputs.environment }}
 
-    permissions:
-      packages: write
-      contents: read
-      id-token: write
-      attestations: write
+

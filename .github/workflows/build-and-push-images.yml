@@ -119,7 +119,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerFile }}
-          load: true
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |

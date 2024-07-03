@@ -87,6 +87,7 @@ jobs:
             ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
+            type=raw,value=latest,enable=${{ contains(matrix.phpExtTag, '-alpine-') }}
 
       - name: Build image for testing
         uses: docker/build-push-action@v6
@@ -114,6 +115,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Build and push the image
+        if: ${{ vars.ACTIONS_STEP_DEBUG != 'true' }}
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -129,6 +131,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Generate artifact attestation (GitHub)
+        if: ${{ vars.ACTIONS_STEP_DEBUG != 'true' }}
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: ${{ env.IMAGE_NAME}}

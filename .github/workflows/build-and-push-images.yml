@@ -13,7 +13,7 @@ on:
 
 env:
   PHP_VERSION: ${{ inputs.php_version }}
-  PHP_EXT_NAMESPACE: "${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}"
+  PHP_EXT_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
 
 jobs:
   image_context:
@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
-          php_ext_namespace: ${{ env.PHP_EXT_NAMESPACE }}
+          php_ext_namespace: ${{ vars.DOCKERHUB_NAMESPACE }}
           php_type: ${{ vars.PHP_TYPE }}
 
   build_image:
@@ -76,23 +76,22 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', vars.PHP_EXT_NAMESPACE) || '' }}
+            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', vars.DOCKERHUB_NAMESPACE) || '' }}
             ghcr.io/${{ github.actor }}/php
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
-      # - name: Build and push Docker image
-      #   id: push
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ${{ matrix.dockerFile }}
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     annotations: ${{ steps.meta.outputs.annotations }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - name: Build Docker Image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerFile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Print context
         run: |

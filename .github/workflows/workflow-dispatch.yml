@@ -18,8 +18,13 @@ env:
 jobs:
   build_images:
     uses: ./.github/workflows/build-and-push-images.yml
+    secrets: inherit
     with:
       php_version: ${{ inputs.php_version }}
       environment: ${{ inputs.environment }}
 
-
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+      attestations: write

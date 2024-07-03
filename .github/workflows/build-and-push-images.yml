@@ -76,10 +76,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.PHP_EXT_NAMESPACE }}/php
+            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', vars.PHP_EXT_NAMESPACE) || '' }}
             ghcr.io/${{ github.actor }}/php
           tags: |
-            type=raw,value=${{ matrix.phpExtTag }}enable=true
+            type=raw,value=${{ matrix.phpExtTag }},enable=true
 
       # - name: Build and push Docker image
       #   id: push

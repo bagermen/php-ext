@@ -86,8 +86,20 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
 
-      # - name: Build Docker Image
-      #   id: push
+      - name: Build Docker Image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerFile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # - name: Test Docker Image
+      #   id: test
       #   uses: docker/build-push-action@v6
       #   with:
       #     context: .

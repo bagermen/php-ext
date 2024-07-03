@@ -11,10 +11,6 @@ on:
         type: string
         required: true
 
-env:
-  PHP_VERSION: ${{ inputs.php_version }}
-  PHP_EXT_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
-
 jobs:
   image_context:
     name: Generate Image Context
@@ -22,6 +18,11 @@ jobs:
     environment: ${{ inputs.environment }}
     outputs:
       matrix: ${{ steps.extract_context.outputs.context }}
+
+    env:
+      PHP_VERSION: ${{ inputs.php_version }}
+      DOCKERHUB_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -31,15 +32,16 @@ jobs:
         uses: ./.github/actions/extract-image-context-action
         with:
           php_version: ${{ env.PHP_VERSION }}
-          php_ext_namespace: ${{ vars.DOCKERHUB_NAMESPACE }}
+          php_ext_namespace: ${{ env.DOCKERHUB_NAMESPACE }}
           php_type: ${{ vars.PHP_TYPE }}
+
 
   build_image:
     name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    if: ${{ fromJSON(needs.image_context.outputs.matrix)[0] != null  }}
-    environment: ${{ inputs.environment }}
     needs: ['image_context']
+    if: ${{ fromJSON(needs.image_context.outputs.matrix)[0] != null  }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     strategy:
       matrix:
         include: ${{ fromJSON(needs.image_context.outputs.matrix) }}
@@ -49,6 +51,9 @@ jobs:
       contents: read
       id-token: write
       attestations: write
+
+    env:
+      DOCKERHUB_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
 
     steps:
       - name: Check out the repo
@@ -76,7 +81,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', vars.DOCKERHUB_NAMESPACE) || '' }}
+            ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('{0}/php', env.DOCKERHUB_NAMESPACE) || '' }}
             ghcr.io/${{ github.actor }}/php
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
@@ -97,3 +102,4 @@ jobs:
         run: |
           echo "phpTag ${{ matrix.phpTag }} / phpExtTag ${{ matrix.phpExtTag }} / dockerFile ${{ matrix.dockerFile }}"
           echo "PUSH_TO_DOCKERHUB: ${{ vars.PUSH_TO_DOCKERHUB }}; DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE }}; PHP_TYPE: ${{ vars.PHP_TYPE }}"
+          echo "PUSH_TO_DOCKERHUB: ${{ env.DOCKERHUB_NAMESPACE }}"

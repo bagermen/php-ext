@@ -14,24 +14,15 @@ on:
         required: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:
-      PHP_EXT_NAMESPACE: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && vars.DOCKERHUB_NAMESPACE || '' }}
-    steps:
-      - name: THE TEST
-        run: |
-          echo "PHP_EXT_NAMESPACE: ${{ env.PHP_EXT_NAMESPACE }};"
-  # build_images:
-  #   uses: ./.github/workflows/build-and-push-images.yml
-  #   secrets: inherit
-  #   with:
-  #     php_version: ${{ inputs.PHP_VERSION }}
-  #     environment: ${{ inputs.environment }}
+  build_images:
+    uses: ./.github/workflows/build-and-push-images.yml
+    secrets: inherit
+    with:
+      php_version: ${{ inputs.PHP_VERSION }}
+      environment: ${{ inputs.environment }}
 
-  #   permissions:
-  #     packages: write
-  #     contents: read
-  #     id-token: write
-  #     attestations: write
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+      attestations: write

@@ -95,6 +95,7 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: IMAGETAG=${{ matrix.phpTag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

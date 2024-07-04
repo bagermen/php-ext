@@ -1,16 +1,14 @@
-import {basename} from "path"
 import * as core from "@actions/core"
-import * as glob from "@actions/glob"
+import type {DockerHubTags} from "docker-hub-tags";
 import {
-	DockerHubTags,
-	OFFICIALIMAGES_NAMESPACE
-} from "docker-hub-tags";
-import {
+	findDockerFileNames,
 	getOsNameFromDockerFile,
-	getOfficialPHPTag,
 	getPHPTag,
-	isError
-} from "./utils"
+	getPHPExtTag,
+	isError,
+	getPHPTags,
+	getPHPExtTags
+} from "./tools"
 import {ImageContext} from "./types";
 
 export async function run() {
@@ -19,15 +17,29 @@ export async function run() {
 		const phpExtNamespace = core.getInput("php_ext_namespace", {required: false});
 		const phpType = core.getInput("php_type", {required: false});
 		const suffix = core.getInput("php_ext_suffix", {required: false});
+		const checkPhpextTag = !!phpExtNamespace;
 
-		const fileNames = await findDockerFileNames();
-		const context: ImageContext[] = fileNames.map(fileName => ({
-			dockerFile: fileName,
-			phpTag: getOfficialPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType),
-			phpExtTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), suffix, phpType)
-		}));
+		let contextes = initContextes(await findDockerFileNames(), phpVersion, suffix, phpType);
 
-		core.setOutput("context", JSON.stringify(await filterContext(context, phpExtNamespace)));
+		const [dhtPHPTags, dhtPHPExtTags] = await Promise.all([
+			getPHPTags(),
+			checkPhpextTag ? getPHPExtTags(phpExtNamespace) : undefined,
+		].filter((v): v is Promise<DockerHubTags> => typeof v !== "undefined"));
+
+		contextes = filterContextes(contextes, dhtPHPTags, dhtPHPExtTags);
+
+		const possibleLatestContext = contextes.filter(context => context.dockerFile.endsWith("alpine")).at(0);
+		if (typeof possibleLatestContext !== "undefined") {
+			markLatestIfRequired(possibleLatestContext, dhtPHPExtTags);
+		}
+
+		if (checkPhpextTag && typeof possibleLatestContext?.phpExtTag !== "undefined"
+			&& typeof dhtPHPExtTags.getRecent(possibleLatestContext.phpExtTag) === "undefined") {
+				possibleLatestContext.latest = true;
+		}
+
+		core.debug(`Contextes: ${JSON.stringify(contextes)}`);
+		core.setOutput("context", JSON.stringify(contextes));
 	} catch (error: unknown) {
 		if (isError(error)) {
 			core.setFailed(error.message);
@@ -35,45 +47,36 @@ export async function run() {
 	}
 }
 
-export async function findDockerFileNames() {
-	const dockerFiles = "Dockerfile.*";
-		const globber = await glob.create(dockerFiles, {followSymbolicLinks: false});
-		const files = await globber.glob();
-
-	return files.map<string>(file => basename(file));
+function initContextes(fileNames: string[], phpVersion: string, suffix: string, phpType: string): ImageContext[] {
+	return fileNames.map(fileName => ({
+		dockerFile: fileName,
+		phpTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType),
+		phpExtTag: getPHPExtTag(phpVersion, getOsNameFromDockerFile(fileName), suffix, phpType),
+		latest: false
+	}))
 }
 
-export async function filterContext(contextes:ImageContext[], phpExtNamespace?: string) {
-	const checkPhpextTag = !!phpExtNamespace;
+function filterContextes(contextes: ImageContext[], dhtPHPTags: DockerHubTags, dhtPHPExtTags?: DockerHubTags) {
+	const checkPhpextTag = typeof dhtPHPExtTags !== "undefined";
 
 	let phpTags = contextes.map(c => c.phpTag);
 	let phpExtTags = checkPhpextTag ? contextes.map(c=> c.phpExtTag) : [];
 
-
-	const tagsList = [
-		DockerHubTags.init(OFFICIALIMAGES_NAMESPACE, "php"),
-		checkPhpextTag ? DockerHubTags.init(phpExtNamespace, "php") : undefined,
-	].filter((v): v is Promise<DockerHubTags> => typeof v !== "undefined");
-
-	for (const [idx, result] of (await Promise.allSettled(tagsList)).entries()) {
-		if (result.status !== "fulfilled") {
-			continue;
-		}
-
-		if (idx === 0) {
-			phpTags = result.value.getAllTags().filter(tag => phpTags.includes(tag.name)).map(tag => tag.name);
-		}
-
-		if (phpExtTags.length && idx > 0) {
-			phpExtTags = result.value.getAllTags().filter(tag => phpExtTags.includes(tag.name)).map(tag => tag.name);
-		}
+	phpTags = dhtPHPTags.getAllTags().filter(tag => phpTags.includes(tag.name)).map(tag => tag.name);
+	if (checkPhpextTag) {
+		phpExtTags = dhtPHPExtTags.getAllTags().filter(tag => phpExtTags.includes(tag.name)).map(tag => tag.name);
 	}
-
-	core.debug(`Contextes: ${JSON.stringify(contextes)}`);
-	core.debug(`phpTags: ${JSON.stringify(phpTags)}`);
-	core.debug(`phpExtTag: ${JSON.stringify(phpExtTags)}`);
 
 	return contextes.filter(({phpTag, phpExtTag}) => {
 		return phpTags.includes(phpTag) && (checkPhpextTag ? !phpExtTags.includes(phpExtTag) : true)
 	});
+}
+
+function markLatestIfRequired(context:ImageContext, dhtPHPExtTags?:DockerHubTags) {
+	if (typeof dhtPHPExtTags === "undefined") {
+		return;
+	}
+	if (typeof dhtPHPExtTags.getRecent(context.phpExtTag) === "undefined") {
+		context.latest = true;
+	}
 }

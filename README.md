@@ -1,5 +1,5 @@
 # PHP-EXT
-Repository which builds images from official **PHP-FPM** images with some popular extensions and pushes results to Github and Gockerhub.
+Repository which builds images from official **PHP-FPM** images with some popular extensions and pushes results to Github and Dockerhub.
 
 The main idea is to provide such PHP images that could be close to official builds and could be used as is when running popular fromeworks like Sympfony or Laravel.
 

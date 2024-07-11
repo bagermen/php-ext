@@ -193,6 +193,38 @@ describe("DockerHub Queries", () => {
 
 		expect(setOutputMock).toHaveBeenCalledWith("context","[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.3-fpm-alpine\",\"phpExtTag\":\"8.3.3-fpm-alpine-ext\",\"latest\":false}]");
 	});
+
+	test("Push PHPExtTag with an New tag", async () => {
+		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
+			switch (name) {
+				case "php_version":
+					return "8.3.9";
+				case "php_ext_namespace":
+					return "besogon1";
+				case "php_type":
+					return "fpm";
+				case "php_ext_suffix":
+					return "ext";
+			}
+			return "";
+		});
+
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
+			let dhtInstance: DockerHubTags;
+
+			if (namespace === OFFICIALIMAGES_NAMESPACE) {
+				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
+			} else {
+				dhtInstance = new (DockerHubTags as any)(phpExtTagInfo) as DockerHubTags;
+			}
+
+			return Promise.resolve(dhtInstance);
+		});
+
+		await run();
+
+		expect(setOutputMock).toHaveBeenCalledWith("context","[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.9-fpm-alpine\",\"phpExtTag\":\"8.3.9-fpm-alpine-ext\",\"latest\":true}]");
+	});
 });
 
 
@@ -431,6 +463,129 @@ const phpTagInfo = [
 		"content_type": "image",
 		"digest": "sha256:5642a2fd6c6121ea0aacc08db7ee211825b83a0fb8a47dd0c2682dacfa171639"
 	},
+	{
+		"creator": 1156886,
+		"id": 714892109,
+		"images": [
+			{
+				"architecture": "amd64",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:c3e096f192f14f4ac0becb4bf72f7f2b9b164d137c758cb00fd795e7eb208589",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 35775449,
+				"status": "active",
+				"last_pulled": "2024-07-07T16:09:48.828968Z",
+				"last_pushed": "2024-07-06T02:30:11.678878Z"
+			},
+			{
+				"architecture": "arm",
+				"features": "",
+				"variant": "v6",
+				"digest": "sha256:b2e890393d3d443f69b0d38d57c524154f3f67c62ce67bd036d9105d17cf474a",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 34026611,
+				"status": "active",
+				"last_pulled": "2024-07-07T16:18:07.744573Z",
+				"last_pushed": "2024-07-06T01:55:18.198082Z"
+			},
+			{
+				"architecture": "arm",
+				"features": "",
+				"variant": "v7",
+				"digest": "sha256:66fd7d7003314c39989f4f2898506ca7ff6f4a4e3f279fee07bbab8e4a2bf61b",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 32613492,
+				"status": "active",
+				"last_pulled": "2024-07-07T16:17:21.333908Z",
+				"last_pushed": "2024-07-06T02:50:07.663768Z"
+			},
+			{
+				"architecture": "arm64",
+				"features": "",
+				"variant": "v8",
+				"digest": "sha256:94e948722e1c9c78c35f9ca4c9f482c12e6fa3bb1f2becdbffc3583baed086b1",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 36798479,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:43:59.064586Z",
+				"last_pushed": "2024-07-06T02:33:01.943115Z"
+			},
+			{
+				"architecture": "386",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:b47854316c119cc0d6be7b717adbb5afcfe593ca59b76973c2a8cac85678f909",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 35851897,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:58:51.107056Z",
+				"last_pushed": "2024-07-06T04:04:26.334227Z"
+			},
+			{
+				"architecture": "ppc64le",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:3d41a1d95017ac43815c1acab6e82e699ca6663884f5ab05d2f297459bcdab42",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 36240245,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:01:46.848061Z",
+				"last_pushed": "2024-07-06T01:55:18.368092Z"
+			},
+			{
+				"architecture": "riscv64",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:fedc2ded3b25f0c2a172adb5f18538461bf23e63e6e3e4d495a13f37f2033247",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 34911613,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:01:47.560719Z",
+				"last_pushed": "2024-07-06T06:19:53.697627Z"
+			},
+			{
+				"architecture": "s390x",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:b5a1a1165c3fd4293aba7b333cff578e75ccd830de515b4d521e8acd74efbd9e",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 35601529,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:01:48.257141Z",
+				"last_pushed": "2024-07-06T02:22:27.450524Z"
+			}
+		],
+		"last_updated": "2024-07-06T06:28:52.815401Z",
+		"last_updater": 1156886,
+		"last_updater_username": "doijanky",
+		"name": "8.3.9-fpm-alpine",
+		"repository": 51054,
+		"full_size": 35775449,
+		"v2": true,
+		"tag_status": "active",
+		"tag_last_pulled": "2024-07-07T16:24:50.508951Z",
+		"tag_last_pushed": "2024-07-06T06:28:52.815401Z",
+		"media_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+		"content_type": "image",
+		"digest": "sha256:8e5e771af8fbad68a6b761d075cd4f3267dbc9372fda5146ed350d8c2c84afeb"
+	},
 ];
 
 const phpExtTagInfo = [
@@ -523,6 +678,51 @@ const phpExtTagInfo = [
 		"media_type": "application/vnd.oci.image.index.v1+json",
 		"content_type": "image",
 		"digest": "sha256:2a2835eb5f05a0b53a8aa45080d263c3fb4d6e7a4fb38b07ba725433ec63d473"
+	},
+	{
+		"creator": 1457519,
+		"id": 715422258,
+		"images": [
+			{
+				"architecture": "amd64",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:a45703772b8bde23896b675b16d01201043e5c8043a9141a1cf283d0b2ebeac0",
+				"os": "linux",
+				"os_features": "",
+				"os_version": null,
+				"size": 185910470,
+				"status": "active",
+				"last_pulled": "2024-07-07T15:42:12.933524Z",
+				"last_pushed": "2024-07-07T15:20:37.301179Z"
+			},
+			{
+				"architecture": "unknown",
+				"features": "",
+				"variant": null,
+				"digest": "sha256:9e440c5d27e3919d18f870df4c0926a2da09eccff322c8ca2307160910feb603",
+				"os": "unknown",
+				"os_features": "",
+				"os_version": null,
+				"size": 14746,
+				"status": "active",
+				"last_pulled": null,
+				"last_pushed": "2024-07-07T15:20:37.520135Z"
+			}
+		],
+		"last_updated": "2024-07-07T15:20:37.787051Z",
+		"last_updater": 1457519,
+		"last_updater_username": "besogon1",
+		"name": "8.3.9-fpm-bookworm-ext",
+		"repository": 14798993,
+		"full_size": 185910470,
+		"v2": true,
+		"tag_status": "active",
+		"tag_last_pulled": "2024-07-07T15:42:12.933524Z",
+		"tag_last_pushed": "2024-07-07T15:20:37.787051Z",
+		"media_type": "application/vnd.oci.image.index.v1+json",
+		"content_type": "image",
+		"digest": "sha256:47f5e92f794f4cdfad78b48645e2ad5af84a5c9c8f769e662930b9284324a927"
 	},
 ];
 /* #endregion */

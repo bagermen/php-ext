@@ -33,11 +33,6 @@ export async function run() {
 			markLatestIfRequired(possibleLatestContext, dhtPHPExtTags);
 		}
 
-		if (checkPhpextTag && typeof possibleLatestContext?.phpExtTag !== "undefined"
-			&& typeof dhtPHPExtTags.getRecent(possibleLatestContext.phpExtTag) === "undefined") {
-				possibleLatestContext.latest = true;
-		}
-
 		core.debug(`Contextes: ${JSON.stringify(contextes)}`);
 		core.setOutput("context", JSON.stringify(contextes));
 	} catch (error: unknown) {
@@ -76,7 +71,8 @@ function markLatestIfRequired(context:ImageContext, dhtPHPExtTags?:DockerHubTags
 	if (typeof dhtPHPExtTags === "undefined") {
 		return;
 	}
-	if (typeof dhtPHPExtTags.getRecent(context.phpExtTag) === "undefined") {
+	const tag = dhtPHPExtTags.getRecent(context.phpExtTag);
+	if (typeof tag === "undefined") {
 		context.latest = true;
 	}
 }

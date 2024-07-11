@@ -87,7 +87,7 @@ jobs:
             ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ matrix.phpExtTag }},enable=true
-            type=raw,value=latest,enable=${{ matrix.latest == 'true' }}
+            type=raw,value=latest,enable=${{ matrix.latest == true }}
 
       - name: Build image for testing
         uses: docker/build-push-action@v6

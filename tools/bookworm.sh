@@ -211,20 +211,7 @@ memcached_ext()
 	fi
 
 	if [ $1 = "pkgs-dev" ]; then
-		echo "libmemcached-dev zlib1g-dev libsasl2-dev"
-		return
-	fi
-
-	if [ $1 = "pkgs-local" ]; then
-		# https://github.com/php-memcached-dev/php-memcached/issues/140
-		echo "\
-		libssl1.1_1.1.1n-0+deb11u4_amd64.deb \
-		libssl-dev_1.1.1n-0+deb10u3_amd64.deb"
-		return
-	fi
-
-	if [ $1 = "pkgs-local-remove" ]; then
-		echo "libssl-dev"
+		echo "libmemcached-dev zlib1g-dev libsasl2-dev libssl-dev"
 		return
 	fi
 
@@ -333,6 +320,11 @@ remove_packages() {
 
 # Actual package installation
 
+echo "Adding php.ini file.."
+ini_file=$(php -i | grep 'Configuration File (php.ini) Path' | sed -e 's/.\+=>[[:blank:]]\+//')/php.ini
+touch $ini_file
+echo "error_reporting = E_ALL & ~E_DEPRECATED" > $ini_file
+
 echo "Packages installation.."
 pkgs=""
 for func in $func_list; do
@@ -361,7 +353,7 @@ for func in $func_list; do
 	install_list="${install_list} $($func php-install)"
 done
 
-if [ -n "$install_list" ]; then
+if [ $install_list ]; then
 	echo "PHP packages installation.."
 
 	echo "docker-php-ext-install -j\"$(nproc)\" $install_list"
@@ -381,5 +373,6 @@ done
 
 echo "System cleanup.."
 remove_packages "$pkgs"
+rm $ini_file
 
 echo "DONE.."

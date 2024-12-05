@@ -320,6 +320,11 @@ remove_packages() {
 
 # Actual package installation
 
+echo "Adding php.ini file.."
+ini_file=$(php -i | grep 'Configuration File (php.ini) Path' | sed -e 's/.\+=>[[:blank:]]\+//')/php.ini
+touch $ini_file
+echo "error_reporting = E_ALL & ~E_DEPRECATED" > $ini_file
+
 echo "Packages installation.."
 pkgs=""
 for func in $func_list; do
@@ -348,7 +353,7 @@ for func in $func_list; do
 	install_list="${install_list} $($func php-install)"
 done
 
-if [ -n "$install_list" ]; then
+if [ $install_list ]; then
 	echo "PHP packages installation.."
 
 	echo "docker-php-ext-install -j\"$(nproc)\" $install_list"
@@ -368,5 +373,6 @@ done
 
 echo "System cleanup.."
 remove_packages "$pkgs"
+rm $ini_file
 
 echo "DONE.."

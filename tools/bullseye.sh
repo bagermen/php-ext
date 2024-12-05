@@ -353,7 +353,7 @@ for func in $func_list; do
 	install_list="${install_list} $($func php-install)"
 done
 
-if [ $install_list ]; then
+if [ "$install_list" ]; then
 	echo "PHP packages installation.."
 
 	echo "docker-php-ext-install -j\"$(nproc)\" $install_list"

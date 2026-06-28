@@ -2,16 +2,18 @@
 	"files": [],
 	"include": [],
 	"ts-node": {
-		"compilerOptions": {
-			"resolveJsonModule": true
-		}
+		"project": "./tsconfig.infrastructure.json"
+	},
+	"compilerOptions": {
+		"forceConsistentCasingInFileNames": true,
+		"strict": true
 	},
 	"references": [
 		{
-			"path": "__tests__"
+			"path": "./__tests__"
 		},
 		{
-			"path": "src"
+			"path": "./src"
 		},
 	]
 }

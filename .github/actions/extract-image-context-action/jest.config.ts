@@ -1,30 +1,24 @@
 import type { JestConfigWithTsJest } from "ts-jest"
-import { pathsToModuleNameMapper } from "ts-jest"
-import { compilerOptions } from "./tsconfig.base.json"
+import { pathsToModuleNameMapper, createJsWithTsPreset } from "ts-jest"
+import { readFileSync } from "node:fs"
+const { compilerOptions } = JSON.parse(readFileSync("./tsconfig.base.json", "utf-8"))
 
+const defaultPreset = createJsWithTsPreset({
+	tsconfig: "<rootDir>/__tests__/tsconfig.json"
+});
 
-export default async (): Promise<JestConfigWithTsJest> => {
-	return {
-		roots: [
-			"<rootDir>/__tests__/"
-		],
-		verbose: true,
-		preset: "ts-jest",
-		clearMocks: true,
-		testEnvironment: "node",
-    	moduleFileExtensions: [
-			"ts",
-      		"js",
-    	],
-		testPathIgnorePatterns: [
-      		"/node_modules/",
-      		"/dist/"
-    	],
-		transform: {
-			"^.+\\.tsx?$": ["ts-jest", {
-				tsconfig: "./__tests__/tsconfig.json"
-			}]
-		},
-		moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' })
-	};
-};
+export default async (): Promise<JestConfigWithTsJest> => ({
+	...defaultPreset,
+	roots: ["<rootDir>/__tests__/"],
+	preset: "ts-jest",
+	testEnvironment: "node",
+	verbose: true,
+	clearMocks: true,
+	moduleFileExtensions: ["ts", "js"],
+	testPathIgnorePatterns: ["/node_modules/", "/dist/", "/__tests__/mocks/"],
+	moduleNameMapper: {
+		...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+		"^@actions/core$": "<rootDir>/__tests__/mocks/actions-core.ts",
+		"^@actions/glob$": "<rootDir>/__tests__/mocks/actions-glob.ts",
+	}
+})

@@ -1,13 +1,16 @@
 {
-	"extends": "../tsconfig.base.json",
-	"files": [
-		"../tsconfig.base.json"
-	],
 	"compilerOptions": {
-		"noEmit": true,
+		"forceConsistentCasingInFileNames": true,
+		"target": "ES2022",
 		"module": "CommonJS",
-		"types": [
-			"jest"
-		]
-	}
+		"esModuleInterop": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"types": ["node"],
+		"paths": {
+			"@src/*": ["../src/*"]
+		}
+	},
+	"include": ["./**/*", "../jest.config.ts"]
 }

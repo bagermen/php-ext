@@ -1,4 +1,5 @@
-import {getOsNameFromDockerFile, getPHPTag, getPHPExtTag} from "@src/tools"
+import { describe, test, expect } from '@jest/globals';
+import {getOsNameFromDockerFile, getPHPTag, getPHPExtTag} from "../src/tools"
 
 describe("Test utils", () => {
 	test("getOsNameFromDockerFile: remove docker prefix", () => {

@@ -1,229 +1,141 @@
-import {run} from "@src/main";
-import {DockerHubTags, OFFICIALIMAGES_NAMESPACE} from "docker-hub-tags";
-import * as core from '@actions/core'
-import * as tools from "@src/tools";
+import { describe, test, expect, jest, beforeEach } from "@jest/globals";
+import { DockerHubTags, OFFICIALIMAGES_NAMESPACE } from "docker-hub-tags";
+import { debug, getInput, setOutput, setFailed } from "@actions/core";
+import * as tools from "../src/tools";
+import { run } from "../src/main";
+
+const mockDebug = jest.mocked(debug);
+const mockGetInput = jest.mocked(getInput);
+const mockSetOutput = jest.mocked(setOutput);
+const mockSetFailed = jest.mocked(setFailed);
 
 let dhtInitMock: jest.SpiedFunction<typeof DockerHubTags.init>;
-let debugMock: jest.SpiedFunction<typeof core.debug>;
-let inputMock: jest.SpiedFunction<typeof core.getInput>;
-let setOutputMock: jest.SpiedFunction<typeof core.setOutput>;
-let setFailedMock: jest.SpiedFunction<typeof core.setFailed>;
 let findDockerFileNamesMock: jest.SpiedFunction<typeof tools.findDockerFileNames>;
+
+function mockGetInputWith(values: Record<string, string>) {
+	mockGetInput.mockImplementation((name) => values[name] ?? "");
+}
 
 describe("DockerHub Queries", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		debugMock = jest.spyOn(core, "debug").mockImplementation();
-		setFailedMock = jest.spyOn(core, "setFailed").mockImplementation();
-		setOutputMock = jest.spyOn(core, "setOutput").mockImplementation();
+		mockDebug.mockImplementation(() => undefined);
+		mockSetFailed.mockImplementation(() => undefined);
+		mockSetOutput.mockImplementation(() => undefined);
 		findDockerFileNamesMock = jest.spyOn(tools, "findDockerFileNames").mockResolvedValue(["Dockerfile.alpine"]);
-		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
-			switch (name) {
-				case "php_version":
-					return "8.3.8";
-				case "php_ext_namespace":
-					return "besogon1";
-				case "php_type":
-					return "fpm";
-				case "php_ext_suffix":
-					return "ext";
-			}
-			return "";
+		mockGetInputWith({
+			php_version: "8.3.8",
+			php_ext_namespace: "besogon1",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
 		});
 	});
 
 	test("PHPTag exists, do not check PHPExt repo", async () => {
-		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
-			switch (name) {
-				case "php_version":
-					return "8.3.8";
-				case "php_ext_namespace":
-					return "";
-				case "php_type":
-					return "fpm";
-				case "php_ext_suffix":
-					return "ext";
-			}
-			return "";
+		mockGetInputWith({
+			php_version: "8.3.8",
+			php_ext_namespace: "",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
 		});
 
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : [];
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":false}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":false}]");
 	});
 
 	test("PHPTag doesn't exists, do not check PHPExt repo", async () => {
-		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
-			switch (name) {
-				case "php_version":
-					return "8.3.1";
-				case "php_ext_namespace":
-					return "";
-				case "php_type":
-					return "fpm";
-				case "php_ext_suffix":
-					return "ext";
-			}
-			return "";
+		mockGetInputWith({
+			php_version: "8.3.1",
+			php_ext_namespace: "",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
 		});
 
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : [];
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
 	});
 
 	test("PHPTag exists, PHPExtTag doesn't exists", async () => {
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : [];
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":true}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":true}]");
 	});
 
 	test("PHPTag doesn't exists, PHPExtTag doesn't exists", async () => {
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation(() => {
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)([]));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
 	});
 
 	test("PHPTag exists, PHPExtTag exists", async () => {
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)(phpExtTagInfo) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtTagInfo;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
 	});
 
 	test("PHPTag doesn't, PHPExtTag exists", async () => {
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)([]) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)(phpExtTagInfo) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? [] : phpExtTagInfo;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-		expect(setOutputMock).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
 	});
 
 	test("Push PHPExtTag with an old tag", async () => {
-		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
-			switch (name) {
-				case "php_version":
-					return "8.3.3";
-				case "php_ext_namespace":
-					return "besogon1";
-				case "php_type":
-					return "fpm";
-				case "php_ext_suffix":
-					return "ext";
-			}
-			return "";
+		mockGetInputWith({
+			php_version: "8.3.3",
+			php_ext_namespace: "besogon1",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
 		});
 
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)(phpExtTagInfo) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtTagInfo;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-
-		expect(setOutputMock).toHaveBeenCalledWith("context","[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.3-fpm-alpine\",\"phpExtTag\":\"8.3.3-fpm-alpine-ext\",\"latest\":false}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.3-fpm-alpine\",\"phpExtTag\":\"8.3.3-fpm-alpine-ext\",\"latest\":false}]");
 	});
 
 	test("Push PHPExtTag with an New tag", async () => {
-		inputMock = jest.spyOn(core, "getInput").mockImplementation(name => {
-			switch (name) {
-				case "php_version":
-					return "8.3.9";
-				case "php_ext_namespace":
-					return "besogon1";
-				case "php_type":
-					return "fpm";
-				case "php_ext_suffix":
-					return "ext";
-			}
-			return "";
+		mockGetInputWith({
+			php_version: "8.3.9",
+			php_ext_namespace: "besogon1",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
 		});
 
-		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace, _repository) => {
-			let dhtInstance: DockerHubTags;
-
-			if (namespace === OFFICIALIMAGES_NAMESPACE) {
-				dhtInstance = new (DockerHubTags as any)(phpTagInfo) as DockerHubTags;
-			} else {
-				dhtInstance = new (DockerHubTags as any)(phpExtTagInfo) as DockerHubTags;
-			}
-
-			return Promise.resolve(dhtInstance);
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtTagInfo;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
 		});
 
 		await run();
-
-		expect(setOutputMock).toHaveBeenCalledWith("context","[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.9-fpm-alpine\",\"phpExtTag\":\"8.3.9-fpm-alpine-ext\",\"latest\":true}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.9-fpm-alpine\",\"phpExtTag\":\"8.3.9-fpm-alpine-ext\",\"latest\":true}]");
 	});
 });
 

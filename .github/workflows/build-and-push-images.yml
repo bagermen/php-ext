@@ -33,6 +33,9 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v7
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Extract image context
         id: extract_context
         uses: ./.github/actions/extract-image-context-action

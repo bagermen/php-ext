@@ -85,7 +85,7 @@ gd_ext()
 intl_ext()
 {
 	if [ $1 = "pkgs" ]; then
-		echo "gettext libicu72"
+		echo "gettext libicu74"
 		return
 	fi
 
@@ -103,7 +103,7 @@ intl_ext()
 zip_ext()
 {
 	if [ $1 = "pkgs" ]; then
-		echo "zip libzip4"
+		echo "zip libzip5"
 		return
 	fi
 

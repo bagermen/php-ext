@@ -24,7 +24,7 @@ jobs:
     uses: ./.github/workflows/build-and-push-images.yml
     secrets: inherit
     with:
-      php_version: ${{ inputs.PHP_VERSION }}
+      php_version: ${{ inputs.php_version }}
       environment: ${{ inputs.environment }}
 
 

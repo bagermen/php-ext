@@ -1,9 +1,9 @@
 import { describe, test, expect, jest, beforeEach } from "@jest/globals";
 import { DockerHubTags, OFFICIALIMAGES_NAMESPACE } from "docker-hub-tags";
 import { debug, getInput, setOutput, setFailed } from "@actions/core";
-import * as tools from "../src/tools";
-import * as phpExtensions from "../src/php-extensions";
-import { run } from "../src/main";
+import * as tools from "@src/tools";
+import * as phpExtensions from "@src/php-extensions";
+import { run } from "@src/main";
 
 const mockExtList = "gd intl zip soap pdo pdo_pgsql pdo_mysql mysqli bcmath opcache igbinary memcached redis xdebug";
 

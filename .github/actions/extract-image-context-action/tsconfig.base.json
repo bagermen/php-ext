@@ -4,6 +4,7 @@
 		"strict": true,
 		"composite": true,
 		"declaration": true,
+		"target": "ES2022",
 		"module": "NodeNext",
 		"rootDir": ".",
 		"outDir": "dist",

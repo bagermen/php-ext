@@ -85,7 +85,7 @@ gd_ext()
 intl_ext()
 {
 	if [ $1 = "pkgs" ]; then
-		echo "gettext libicu74"
+		echo "gettext libicu76"
 		return
 	fi
 

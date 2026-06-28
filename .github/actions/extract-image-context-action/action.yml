@@ -16,6 +16,10 @@ inputs:
   php_ext_namespace:
     description: 'DockerHub namespace of PHPExt images'
     required: false
+  extensions_config:
+    description: 'Path to php-extensions.ini relative to repository root'
+    required: false
+    default: 'php-extensions.ini'
 
 outputs:
   context:

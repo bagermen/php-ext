@@ -2,7 +2,14 @@ import { describe, test, expect, jest, beforeEach } from "@jest/globals";
 import { DockerHubTags, OFFICIALIMAGES_NAMESPACE } from "docker-hub-tags";
 import { debug, getInput, setOutput, setFailed } from "@actions/core";
 import * as tools from "../src/tools";
+import * as phpExtensions from "../src/php-extensions";
 import { run } from "../src/main";
+
+const mockExtList = "gd intl zip soap pdo pdo_pgsql pdo_mysql mysqli bcmath opcache igbinary memcached redis xdebug";
+
+function contextJson(context: Record<string, unknown>): string {
+	return JSON.stringify([context]);
+}
 
 const mockDebug = jest.mocked(debug);
 const mockGetInput = jest.mocked(getInput);
@@ -23,6 +30,7 @@ describe("DockerHub Queries", () => {
 		mockSetFailed.mockImplementation(() => undefined);
 		mockSetOutput.mockImplementation(() => undefined);
 		findDockerFileNamesMock = jest.spyOn(tools, "findDockerFileNames").mockResolvedValue(["Dockerfile.alpine"]);
+		jest.spyOn(phpExtensions, "loadExtList").mockResolvedValue(mockExtList);
 		mockGetInputWith({
 			php_version: "8.3.8",
 			php_ext_namespace: "besogon1",
@@ -45,7 +53,13 @@ describe("DockerHub Queries", () => {
 		});
 
 		await run();
-		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":false}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", contextJson({
+			dockerFile: "Dockerfile.alpine",
+			phpTag: "8.3.8-fpm-alpine",
+			phpExtTag: "8.3.8-fpm-alpine-ext",
+			extList: mockExtList,
+			latest: false,
+		}));
 	});
 
 	test("PHPTag doesn't exists, do not check PHPExt repo", async () => {
@@ -72,7 +86,13 @@ describe("DockerHub Queries", () => {
 		});
 
 		await run();
-		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.8-fpm-alpine\",\"phpExtTag\":\"8.3.8-fpm-alpine-ext\",\"latest\":true}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", contextJson({
+			dockerFile: "Dockerfile.alpine",
+			phpTag: "8.3.8-fpm-alpine",
+			phpExtTag: "8.3.8-fpm-alpine-ext",
+			extList: mockExtList,
+			latest: true,
+		}));
 	});
 
 	test("PHPTag doesn't exists, PHPExtTag doesn't exists", async () => {
@@ -118,7 +138,13 @@ describe("DockerHub Queries", () => {
 		});
 
 		await run();
-		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.3-fpm-alpine\",\"phpExtTag\":\"8.3.3-fpm-alpine-ext\",\"latest\":false}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", contextJson({
+			dockerFile: "Dockerfile.alpine",
+			phpTag: "8.3.3-fpm-alpine",
+			phpExtTag: "8.3.3-fpm-alpine-ext",
+			extList: mockExtList,
+			latest: false,
+		}));
 	});
 
 	test("Push PHPExtTag with an New tag", async () => {
@@ -135,7 +161,13 @@ describe("DockerHub Queries", () => {
 		});
 
 		await run();
-		expect(mockSetOutput).toHaveBeenCalledWith("context", "[{\"dockerFile\":\"Dockerfile.alpine\",\"phpTag\":\"8.3.9-fpm-alpine\",\"phpExtTag\":\"8.3.9-fpm-alpine-ext\",\"latest\":true}]");
+		expect(mockSetOutput).toHaveBeenCalledWith("context", contextJson({
+			dockerFile: "Dockerfile.alpine",
+			phpTag: "8.3.9-fpm-alpine",
+			phpExtTag: "8.3.9-fpm-alpine-ext",
+			extList: mockExtList,
+			latest: true,
+		}));
 	});
 });
 

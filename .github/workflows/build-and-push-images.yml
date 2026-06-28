@@ -55,7 +55,6 @@ jobs:
     env:
       IMAGE_NAME: ghcr.io/${{ github.actor }}/php
       IMAGE_NAME_DOCKER: ${{ vars.PUSH_TO_DOCKERHUB == 'true' && format('docker.io/{0}/php', vars.DOCKERHUB_NAMESPACE) || '' }}
-      EXT_LIST: ${{ vars.EXT_LIST }}
 
     steps:
       - name: Check out the repo
@@ -98,7 +97,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             IMAGETAG=${{ matrix.phpTag }}
-            EXT_LIST=${{ vars.EXT_LIST }}
+            EXT_LIST=${{ matrix.extList }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -106,7 +105,7 @@ jobs:
         run: |
           echo "::group::Checking image libraries ${{ matrix.phpExtTag }}"
           LIBS=$(docker run --rm ${{ env.IMAGE_NAME }}:${{ matrix.phpExtTag }} php -m)
-          for lib in $EXT_LIST; do \
+          for lib in ${{ matrix.extList }}; do \
             if [[ $(echo "${LIBS[@]}" | fgrep -wi "$lib") ]]; \
               then echo "::debug::OK: $lib"; \
               else echo "::error title={$lib}::{$lib library may not have been installed}"; \
@@ -126,7 +125,7 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             IMAGETAG=${{ matrix.phpTag }}
-            EXT_LIST=${{ vars.EXT_LIST }}
+            EXT_LIST=${{ matrix.extList }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

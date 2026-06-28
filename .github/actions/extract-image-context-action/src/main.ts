@@ -9,6 +9,7 @@ import {
 	getPHPTags,
 	getPHPExtTags
 } from "./tools"
+import {loadExtList} from "./php-extensions";
 import {ImageContext} from "./types";
 
 export async function run() {
@@ -17,9 +18,11 @@ export async function run() {
 		const phpExtNamespace = core.getInput("php_ext_namespace", {required: false});
 		const phpType = core.getInput("php_type", {required: false});
 		const suffix = core.getInput("php_ext_suffix", {required: false});
+		const extensionsConfig = core.getInput("extensions_config", {required: false}) || "php-extensions.ini";
 		const checkPhpextTag = !!phpExtNamespace;
 
-		let contextes = initContextes(await findDockerFileNames(), phpVersion, suffix, phpType);
+		const extList = await loadExtList(phpVersion, extensionsConfig);
+		let contextes = initContextes(await findDockerFileNames(), phpVersion, suffix, phpType, extList);
 
 		const [dhtPHPTags, dhtPHPExtTags] = await Promise.all([
 			getPHPTags(),
@@ -42,11 +45,12 @@ export async function run() {
 	}
 }
 
-function initContextes(fileNames: string[], phpVersion: string, suffix: string, phpType: string): ImageContext[] {
+function initContextes(fileNames: string[], phpVersion: string, suffix: string, phpType: string, extList: string): ImageContext[] {
 	return fileNames.map(fileName => ({
 		dockerFile: fileName,
 		phpTag: getPHPTag(phpVersion, getOsNameFromDockerFile(fileName), phpType),
 		phpExtTag: getPHPExtTag(phpVersion, getOsNameFromDockerFile(fileName), suffix, phpType),
+		extList,
 		latest: false
 	}))
 }

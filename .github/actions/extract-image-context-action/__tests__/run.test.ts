@@ -64,6 +64,7 @@ describe("DockerHub Queries", () => {
 			moveMajor: true,
 			latest: false,
 		}));
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("PHPTag doesn't exists, do not check PHPExt repo", async () => {
@@ -81,6 +82,7 @@ describe("DockerHub Queries", () => {
 
 		await run();
 		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("PHPTag exists, PHPExtTag doesn't exists", async () => {
@@ -101,6 +103,7 @@ describe("DockerHub Queries", () => {
 			moveMajor: true,
 			latest: true,
 		}));
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("PHPTag doesn't exists, PHPExtTag doesn't exists", async () => {
@@ -110,9 +113,10 @@ describe("DockerHub Queries", () => {
 
 		await run();
 		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
-	test("PHPTag exists, PHPExtTag exists", async () => {
+	test("PHPTag exists, PHPExtTag exists, aliases missing", async () => {
 		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
 			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtTagInfo;
 			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
@@ -120,6 +124,30 @@ describe("DockerHub Queries", () => {
 
 		await run();
 		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", contextJson({
+			phpExtTag: "8.3.8-fpm-alpine-ext",
+			phpExtMinorTag: "8.3-fpm-alpine-ext",
+			phpExtMajorTag: "8-fpm-alpine-ext",
+			retagMinor: true,
+			retagMajor: true,
+		}));
+	});
+
+	test("PHPTag exists, PHPExtTag exists, aliases already present", async () => {
+		const phpExtWithAliases = [
+			...phpExtTagInfo,
+			{...phpExtTagInfo[1], name: "8.3-fpm-alpine-ext", id: 1},
+			{...phpExtTagInfo[1], name: "8-fpm-alpine-ext", id: 2},
+		];
+
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtWithAliases;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
+		});
+
+		await run();
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("PHPTag doesn't, PHPExtTag exists", async () => {
@@ -130,6 +158,7 @@ describe("DockerHub Queries", () => {
 
 		await run();
 		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("Push PHPExtTag with an old tag", async () => {
@@ -157,6 +186,30 @@ describe("DockerHub Queries", () => {
 			moveMajor: false,
 			latest: false,
 		}));
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
+	});
+
+	test("Old PHPExtTag already exists, not head of line", async () => {
+		mockGetInputWith({
+			php_version: "8.3.3",
+			php_ext_namespace: "besogon1",
+			php_type: "fpm",
+			php_ext_suffix: "ext",
+		});
+
+		const phpExtWithOldPatch = [
+			...phpExtTagInfo,
+			{...phpExtTagInfo[1], name: "8.3.3-fpm-alpine-ext", id: 3},
+		];
+
+		dhtInitMock = jest.spyOn(DockerHubTags, "init").mockImplementation((namespace) => {
+			const tags = namespace === OFFICIALIMAGES_NAMESPACE ? phpTagInfo : phpExtWithOldPatch;
+			return Promise.resolve(new (DockerHubTags as unknown as new (tags: unknown[]) => DockerHubTags)(tags));
+		});
+
+		await run();
+		expect(mockSetOutput).toHaveBeenCalledWith("context", "[]");
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 
 	test("Push PHPExtTag with an New tag", async () => {
@@ -184,6 +237,7 @@ describe("DockerHub Queries", () => {
 			moveMajor: true,
 			latest: true,
 		}));
+		expect(mockSetOutput).toHaveBeenCalledWith("retag_context", "[]");
 	});
 });
 

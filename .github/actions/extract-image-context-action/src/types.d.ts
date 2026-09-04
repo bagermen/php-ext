@@ -9,3 +9,11 @@ export type ImageContext = {
 	moveMajor: boolean,
 	latest: boolean
 }
+
+export type RetagContext = {
+	phpExtTag: string,
+	phpExtMinorTag: string,
+	phpExtMajorTag: string,
+	retagMinor: boolean,
+	retagMajor: boolean,
+}

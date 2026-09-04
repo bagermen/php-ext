@@ -169,7 +169,7 @@ jobs:
         if: ${{ vars.ACTIONS_STEP_DEBUG != 'true' }}
         run: |
           src="${{ env.IMAGE_NAME_DOCKER }}:${{ matrix.phpExtTag }}"
-          args=( -f "$src" )
+          args=( "$src" )
           if [[ "${{ matrix.retagMinor }}" == "true" ]]; then
             args+=( --tag "${{ env.IMAGE_NAME_DOCKER }}:${{ matrix.phpExtMinorTag }}" )
           fi

@@ -35,6 +35,24 @@ export function getPHPExtTag(phpVersion:string, osName:string, extSuffix: string
 	return `${officialTag}-${extSuffix}`;
 }
 
+/** Split semver-ish PHP version into major / major.minor aliases (e.g. 8.2.33 → { major: "8", minor: "8.2" }). */
+export function getVersionAliases(phpVersion: string): {major: string; minor: string} {
+	const parts = phpVersion.split(".");
+	const major = parts[0] ?? phpVersion;
+	const minor = parts.length >= 2 ? `${parts[0]}.${parts[1]}` : major;
+	return {major, minor};
+}
+
+export function getPHPExtMinorTag(phpVersion: string, osName: string, extSuffix: string, phpType?: string) {
+	const {minor} = getVersionAliases(phpVersion);
+	return getPHPExtTag(minor, osName, extSuffix, phpType);
+}
+
+export function getPHPExtMajorTag(phpVersion: string, osName: string, extSuffix: string, phpType?: string) {
+	const {major} = getVersionAliases(phpVersion);
+	return getPHPExtTag(major, osName, extSuffix, phpType);
+}
+
 export function isError(error: unknown): error is Error {
 	if (error && typeof error === "object" && "message" in error) {
 		return true;

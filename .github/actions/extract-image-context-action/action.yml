@@ -23,7 +23,9 @@ inputs:
 
 outputs:
   context:
-    description: 'Image context'
+    description: 'Image context for build and push'
+  retag_context:
+    description: 'Image context for retagging missing floating aliases on Docker Hub'
 
 runs:
   using: 'node24'

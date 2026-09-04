@@ -1,5 +1,12 @@
 import { describe, test, expect } from '@jest/globals';
-import {getOsNameFromDockerFile, getPHPTag, getPHPExtTag} from "@src/tools"
+import {
+	getOsNameFromDockerFile,
+	getPHPTag,
+	getPHPExtTag,
+	getVersionAliases,
+	getPHPExtMinorTag,
+	getPHPExtMajorTag,
+} from "@src/tools"
 
 describe("Test utils", () => {
 	test("getOsNameFromDockerFile: remove docker prefix", () => {
@@ -13,5 +20,17 @@ describe("Test utils", () => {
 
 	test("getPHPTag: check name", () => {
 		expect(getPHPExtTag("8.3.8", "alpine", "ext", "fpm")).toBe("8.3.8-fpm-alpine-ext");
+	});
+
+	test("getVersionAliases: patch version", () => {
+		expect(getVersionAliases("8.3.8")).toEqual({major: "8", minor: "8.3"});
+	});
+
+	test("getPHPExtMinorTag: check name", () => {
+		expect(getPHPExtMinorTag("8.3.8", "alpine", "ext", "fpm")).toBe("8.3-fpm-alpine-ext");
+	});
+
+	test("getPHPExtMajorTag: check name", () => {
+		expect(getPHPExtMajorTag("8.3.8", "alpine", "ext", "fpm")).toBe("8-fpm-alpine-ext");
 	});
 });

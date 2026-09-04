@@ -57,7 +57,11 @@ describe("DockerHub Queries", () => {
 			dockerFile: "Dockerfile.alpine",
 			phpTag: "8.3.8-fpm-alpine",
 			phpExtTag: "8.3.8-fpm-alpine-ext",
+			phpExtMinorTag: "8.3-fpm-alpine-ext",
+			phpExtMajorTag: "8-fpm-alpine-ext",
 			extList: mockExtList,
+			moveMinor: true,
+			moveMajor: true,
 			latest: false,
 		}));
 	});
@@ -90,7 +94,11 @@ describe("DockerHub Queries", () => {
 			dockerFile: "Dockerfile.alpine",
 			phpTag: "8.3.8-fpm-alpine",
 			phpExtTag: "8.3.8-fpm-alpine-ext",
+			phpExtMinorTag: "8.3-fpm-alpine-ext",
+			phpExtMajorTag: "8-fpm-alpine-ext",
 			extList: mockExtList,
+			moveMinor: true,
+			moveMajor: true,
 			latest: true,
 		}));
 	});
@@ -142,7 +150,11 @@ describe("DockerHub Queries", () => {
 			dockerFile: "Dockerfile.alpine",
 			phpTag: "8.3.3-fpm-alpine",
 			phpExtTag: "8.3.3-fpm-alpine-ext",
+			phpExtMinorTag: "8.3-fpm-alpine-ext",
+			phpExtMajorTag: "8-fpm-alpine-ext",
 			extList: mockExtList,
+			moveMinor: false,
+			moveMajor: false,
 			latest: false,
 		}));
 	});
@@ -165,7 +177,11 @@ describe("DockerHub Queries", () => {
 			dockerFile: "Dockerfile.alpine",
 			phpTag: "8.3.9-fpm-alpine",
 			phpExtTag: "8.3.9-fpm-alpine-ext",
+			phpExtMinorTag: "8.3-fpm-alpine-ext",
+			phpExtMajorTag: "8-fpm-alpine-ext",
 			extList: mockExtList,
+			moveMinor: true,
+			moveMajor: true,
 			latest: true,
 		}));
 	});

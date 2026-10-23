@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@actions/core": "^3.0.1",
-    "@actions/glob": "^0.7.0",
-    "docker-hub-tags": "^1.0.1"
+    "@actions/glob": "^0.7.0"
   }
 }

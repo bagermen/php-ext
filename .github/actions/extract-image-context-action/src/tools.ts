@@ -4,7 +4,7 @@ import * as glob from "@actions/glob"
 import {
 	DockerHubTags,
 	OFFICIALIMAGES_NAMESPACE
-} from "docker-hub-tags";
+} from "@src/docker-hub-tags";
 
 export function getPHPTags() {
 	return DockerHubTags.init(OFFICIALIMAGES_NAMESPACE, "php");

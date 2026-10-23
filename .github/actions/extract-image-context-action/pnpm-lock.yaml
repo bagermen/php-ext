@@ -14,9 +14,6 @@ importers:
       '@actions/glob':
         specifier: ^0.7.0
         version: 0.7.0
-      docker-hub-tags:
-        specifier: ^1.0.1
-        version: 1.0.1
     devDependencies:
       '@jest/globals':
         specifier: ^30.4.1
@@ -896,10 +893,6 @@ packages:
     resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==}
     engines: {node: '>=0.3.1'}
 
-  docker-hub-tags@1.0.1:
-    resolution: {integrity: sha512-kBSfUqILokCEIj97DlpL1q/Twer0ULQ7WzleNWpI2csAoCdsR8dmPffUaj8o8gI3QxhBp0TOQrynwiRIiKhvlQ==}
-    engines: {node: '>=20', npm: '>=10'}
-
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
@@ -1628,9 +1621,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
 
@@ -2509,10 +2499,6 @@ snapshots:
 
   diff@4.0.4:
     optional: true
-
-  docker-hub-tags@1.0.1:
-    dependencies:
-      zod: 3.25.76
 
   eastasianwidth@0.2.0: {}
 
@@ -3406,5 +3392,3 @@ snapshots:
     optional: true
 
   yocto-queue@0.1.0: {}
-
-  zod@3.25.76: {}

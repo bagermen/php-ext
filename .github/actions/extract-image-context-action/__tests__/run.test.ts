@@ -1,5 +1,5 @@
 import { describe, test, expect, jest, beforeEach } from "@jest/globals";
-import { DockerHubTags, OFFICIALIMAGES_NAMESPACE } from "docker-hub-tags";
+import { DockerHubTags, OFFICIALIMAGES_NAMESPACE } from "@src/docker-hub-tags";
 import { debug, getInput, setOutput, setFailed } from "@actions/core";
 import * as tools from "@src/tools";
 import * as phpExtensions from "@src/php-extensions";

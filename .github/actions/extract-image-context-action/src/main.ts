@@ -1,5 +1,5 @@
 import * as core from "@actions/core"
-import type {DockerHubTags} from "docker-hub-tags";
+import type {DockerHubTags} from "@src/docker-hub-tags";
 import {
 	findDockerFileNames,
 	getOsNameFromDockerFile,
